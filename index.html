@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Athlete Scout SNS</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #1c1e21; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        h1 { color: #1877f2; border-bottom: 2px solid #e4e6eb; padding-bottom: 10px; }
+        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #e4e6eb; border-radius: 6px; }
+        .btn { background: #1877f2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #166fe5; }
+        .btn-secondary { background: #e4e6eb; color: #050505; }
+        .btn-secondary:hover { background: #d8dadf; }
+        .user-card { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .friend-badge { background: #e7f3ff; color: #1877f2; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
+        .billing-log { font-family: monospace; background: #f8f9fa; padding: 10px; font-size: 0.9em; }
+        .tag-value { color: #d0021b; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Athlete Scout SNS <span style="font-size: 0.5em; color: #65676b;">(Yume v2 Prototype)</span></h1>
+        
+        <div id="app">
+            <!-- UI will be rendered here -->
+        </div>
+
+        <div class="section">
+            <h3>Billing History (Admin View)</h3>
+            <div id="billing-view" class="billing-log"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { store, dispatch } from './logic.yume.js';
+        import { render } from './ui.yume.js';
+
+        const appEl = document.getElementById('app');
+        const billingEl = document.getElementById('billing-view');
+
+        // Observer: Re-render on state change
+        function update() {
+            render(appEl, store.REAL_state, dispatch);
+            
+            // Update billing log
+            billingEl.innerHTML = store.REAL_state.billing.map(b => 
+                `<div>[${b.type}] ${b.matchId} -> <span class="tag-value">${b.amount}</span></div>`
+            ).join('') || 'No transactions yet.';
+        }
+
+        // Initial render
+        update();
+
+        // Hook into dispatch to trigger update (Simple observable)
+        const originalDispatch = store.dispatch;
+        store.dispatch = function(...args) {
+            const res = originalDispatch.apply(store, args);
+            if (res) update();
+            return res;
+        };
+
+        // Seed initial data for demo
+        dispatch({ type: 'USER_REGISTER', payload: { id: 'std:alice', role: 'role:student', name: 'Alice', sport: 'Soccer' } });
+        dispatch({ type: 'USER_REGISTER', payload: { id: 'std:bob', role: 'role:student', name: 'Bob', sport: 'Soccer' } });
+        dispatch({ type: 'USER_REGISTER', payload: { id: 'corp:mega', role: 'role:corp', name: 'MegaCorp' } });
+    </script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+// @yume-format: 1
+/**
+ * logic.yume.js - Core Business Logic & State Management
+ * @tags: logic, state, reducer
+ */
+
+import { EventStore, evalConstraint } from './yume-core.js';
+import { Roles, MatchStatus, StatusTransitions, checkPairEligibility, Fees } from './BIBLE.js';
+
+export const __block = {
+  id: 'sns:logic',
+  type: 'module',
+  versions: [{ hash: 'initial', content: '', ts: Date.now(), refs: [], tags: ['logic'] }]
+};
+
+// === HEAD ===
+
+const initialState = {
+  users: {}, // { id: { id, role, profile: { name, sport, friends: [] } } }
+  matches: {}, // { id: { id, corpId, studentIds: [], status, interviewType, createdAt } }
+  billing: [] // { id, matchId, amount, type, timestamp }
+};
+
+/**
+ * REDUCER: Purely derives next state from current state + event
+ */
+export function snsReducer(state, event) {
+  const { type, payload } = event;
+  const users = { ...state.users };
+  const matches = { ...state.matches };
+  const billing = [...state.billing];
+
+  switch (type) {
+    case 'USER_REGISTER': {
+      users[payload.id] = {
+        id: payload.id,
+        role: payload.role,
+        profile: { 
+          name: payload.name, 
+          sport: payload.sport || '', 
+          friends: [] 
+        }
+      };
+      break;
+    }
+
+    case 'SET_FRIEND': {
+      const student = users[payload.studentId];
+      if (student) {
+        users[payload.studentId] = {
+          ...student,
+          profile: {
+            ...student.profile,
+            friends: [...new Set([...student.profile.friends, payload.friendId])]
+          }
+        };
+      }
+      break;
+    }
+
+    case 'SEND_SCOUT': {
+      const matchId = `match:${payload.corpId}:${[...payload.studentIds].sort().join('-')}`;
+      matches[matchId] = {
+        id: matchId,
+        corpId: payload.corpId,
+        studentIds: payload.studentIds,
+        status: MatchStatus.SCOUTED,
+        interviewType: payload.studentIds.length > 1 ? 'type:pair' : 'type:single',
+        createdAt: Date.now()
+      };
+      break;
+    }
+
+    case 'SET_INTERVIEW': {
+      const match = matches[payload.matchId];
+      if (match) {
+        match.status = MatchStatus.INTERVIEW_SET;
+        const fee = match.interviewType === 'type:pair' ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW;
+        billing.push({
+          id: `bill:${Date.now()}`,
+          matchId: match.id,
+          amount: fee,
+          type: 'fee:interview'
+        });
+      }
+      break;
+    }
+
+    case 'MARK_HIRED': {
+      const match = matches[payload.matchId];
+      if (match) {
+        match.status = MatchStatus.HIRED;
+        const fee = match.interviewType === 'type:pair' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE;
+        billing.push({
+          id: `bill:${Date.now()}`,
+          matchId: match.id,
+          amount: fee,
+          type: 'fee:hire'
+        });
+      }
+      break;
+    }
+  }
+
+  return { users, matches, billing };
+}
+
+/**
+ * VALIDATOR: Checks if an event is allowed given the current state
+ */
+export function snsValidator(state, event) {
+  const { type, payload } = event;
+
+  if (type === 'SEND_SCOUT') {
+    // If pair scout, check eligibility
+    if (payload.studentIds.length === 2) {
+      const s1 = state.users[payload.studentIds[0]];
+      const s2 = state.users[payload.studentIds[1]];
+      if (!s1 || !s2 || !checkPairEligibility(s1, s2)) return false;
+    }
+  }
+
+  if (type === 'SET_INTERVIEW' || type === 'MARK_HIRED') {
+    const match = state.matches[payload.matchId];
+    if (!match) return false;
+    
+    // Use BIBLE constraints for status transition
+    const targetStatus = type === 'SET_INTERVIEW' ? MatchStatus.INTERVIEW_SET : MatchStatus.HIRED;
+    const worlds = evalConstraint(StatusTransitions, { from: match.status, to: targetStatus });
+    if (worlds._contradiction || !worlds.worlds[0]._isValid) return false;
+  }
+
+  return true;
+}
+
+export const store = new EventStore(initialState);
+
+export function dispatch(event) {
+  return store.dispatch(event, snsReducer, snsValidator);
+}
+
+// === /HEAD ===
