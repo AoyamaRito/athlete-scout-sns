@@ -91,6 +91,16 @@ test('E2E Full Flow: Register, Pair Scout, Funnel Progress, Billing, Exceptions'
   assert.ok(interviewBill, 'Interview billing record should exist');
   assert.strictEqual(interviewBill.amount, 'jpy:15000', 'Pair interview fee should be domain-tagged jpy:15000');
 
+  // 5. CHAT MESSAGING DURING INTERVIEW
+  const msgRes = dispatch({ type: 'SEND_MESSAGE', payload: { matchId: matchPairId, senderId: 'std:1', text: '初めまして！よろしくお願いします！' } });
+  assert.strictEqual(msgRes, true, 'Student should be allowed to send message during interview');
+  assert.strictEqual(store.REAL_state.messages.length, 1, 'Message list should contain 1 message');
+  assert.strictEqual(store.REAL_state.messages[0].text, '初めまして！よろしくお願いします！');
+
+  // Attempt chat messaging from a non-participating student
+  const badMsgRes = dispatch({ type: 'SEND_MESSAGE', payload: { matchId: matchPairId, senderId: 'std:charlie', text: '割り込みチャット' } });
+  assert.strictEqual(badMsgRes, false, 'Non-participating student must be rejected from sending messages');
+
   // Pair Hire Hired (jpy:350000)
   const setHirePass = dispatch({ type: 'MARK_HIRED', payload: { matchId: matchPairId } });
   assert.strictEqual(setHirePass, true, 'Should successfully transition pair to hired');
