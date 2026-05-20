@@ -257,6 +257,122 @@
             word-break: break-all;
         }
 
+        /* Drawer Overlay */
+        .drawer-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 999;
+        }
+
+        /* Slide-out Drawer */
+        .drawer {
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 520px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: -4px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .drawer.open {
+            transform: translateX(0);
+        }
+
+        .drawer-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h3 {
+            font-size: 1.1em;
+            color: var(--primary-color);
+        }
+
+        .drawer-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .drawer-footer {
+            padding: 15px 20px;
+            border-top: 1px solid var(--border-color);
+            background: #f8fafc;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        /* Drawer Tabs */
+        .drawer-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85em;
+            color: var(--text-sub);
+            border-bottom: 2px solid transparent;
+            text-align: center;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom-color: var(--accent-color);
+        }
+
+        /* Email draft block */
+        .email-draft {
+            background: #f1f5f9;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            color: #1e293b;
+            margin-bottom: 15px;
+            max-height: 280px;
+            overflow-y: auto;
+            user-select: all;
+        }
+
+        /* Invoice sheet view */
+        .invoice-sheet {
+            background: #ffffff;
+            border: 1px solid #94a3b8;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            padding: 24px;
+            font-size: 0.8em;
+            color: #1e293b;
+            line-height: 1.5;
+        }
+
         @media (min-width: 600px) {
             body {
                 padding: 30px;
@@ -273,6 +389,25 @@
                 font-size: 0.55em;
             }
         }
+
+        /* Print styles for Invoice Sheet */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #invoice-print-area, #invoice-print-area * {
+                visibility: visible;
+            }
+            #invoice-print-area {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+        }
     </style>
 </head>
 <body>
@@ -286,7 +421,7 @@
             </div>
         </div>
 
-        <h1>システム総括ダッシュボード <span>(Yume v2 監査機能搭載)</span></h1>
+        <h1>システム総括ダッシュボード <span>(Yume v2 監査機能・人力請求書送付Desk搭載)</span></h1>
 
         <!-- Stats Counter Panel -->
         <div class="stats-grid">
@@ -333,7 +468,7 @@
 
         <!-- Settle Desk Section -->
         <div class="section">
-            <h3>💸 システム請求決済デスク</h3>
+            <h3>💸 システム請求決済デスク <span style="font-size: 0.7em; font-weight: normal; color: var(--text-sub); margin-left: 10px;">※人力送付メール用の下書き＆請求書は各行から取得可能です。</span></h3>
             <div class="table-container">
                 <table>
                     <thead>
@@ -343,7 +478,7 @@
                             <th>請求種別</th>
                             <th>請求金額</th>
                             <th>ステータス</th>
-                            <th>操作</th>
+                            <th>操作・発行</th>
                         </tr>
                     </thead>
                     <tbody id="billing-table-body">
@@ -392,12 +527,46 @@
         </div>
     </div>
 
+    <!-- Slide-out Drawer Overlay & Panel -->
+    <div id="drawer-overlay" class="drawer-overlay" onclick="window.sns_close_drawer()"></div>
+    <div id="drawer" class="drawer">
+        <div class="drawer-header">
+            <h3 id="drawer-title">請求書類発行デスク</h3>
+            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8em; min-height: auto;" onclick="window.sns_close_drawer()">✖ 閉じる</button>
+        </div>
+        <div class="drawer-tabs">
+            <button id="tab-btn-email" class="tab-btn active" onclick="window.sns_switch_tab('email')">📬 メール用下書き</button>
+            <button id="tab-btn-invoice" class="tab-btn" onclick="window.sns_switch_tab('invoice')">📄 請求書プレビュー</button>
+        </div>
+        <div class="drawer-content">
+            <!-- Tab 1: Email Draft -->
+            <div id="tab-content-email">
+                <p style="font-size: 0.8em; color: var(--text-sub); margin-bottom: 10px;">コピーしてそのままメールソフトに貼り付けできます。</p>
+                <div id="email-text-draft" class="email-draft"></div>
+                <button class="btn" style="width: 100%;" onclick="window.sns_copy_text('email-text-draft')">📋 下書きをクリップボードにコピー</button>
+            </div>
+            <!-- Tab 2: Printable Invoice -->
+            <div id="tab-content-invoice" style="display: none;">
+                <p style="font-size: 0.8em; color: var(--text-sub); margin-bottom: 10px;">ブラウザの印刷機能（Cmd+P / Ctrl+P）でPDFとして保存できます。</p>
+                <div id="invoice-print-area" class="invoice-sheet">
+                    <!-- Dynamic Invoice Content -->
+                </div>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="window.sns_print_invoice()">🖨️ 請求書を印刷 / PDF保存</button>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <button class="btn btn-secondary" onclick="window.sns_close_drawer()">戻る</button>
+        </div>
+    </div>
+
     <!-- Script wiring shared store & reactivity -->
     <script type="module">
         import { store, dispatch, initStore } from './logic.yume.js';
 
         // Load & Replay event log on mount
         initStore();
+
+        let currentBillId = null;
 
         function renderAdmin() {
             const state = store.REAL_state;
@@ -443,16 +612,21 @@
                 const statusBadge = isPaid 
                     ? `<span class="badge badge-paid">入金完了 (PAID)</span>`
                     : `<span class="badge badge-unpaid">未入金 (UNPAID)</span>`;
-                const payButton = isPaid 
-                    ? `<span style="color: var(--success-color); font-weight: bold; font-size: 0.85em;">-</span>`
-                    : `<button class="btn" onclick="window.sns_pay_bill('${b.id}')">強制入金</button>`;
+                const payAction = isPaid 
+                    ? `<span style="color: var(--success-color); font-weight: bold; font-size: 0.85em; margin-right: 8px;">-</span>`
+                    : `<button class="btn" style="margin-right: 8px;" onclick="window.sns_pay_bill('${b.id}')">強制決済</button>`;
                 return `<tr>
-                    <td><code>${b.id.slice(0, 15)}...</code></td>
-                    <td><code>${b.matchId.slice(0, 18)}...</code></td>
+                    <td><code>${b.id.slice(0, 10)}...</code></td>
+                    <td><code>${b.matchId.slice(0, 10)}...</code></td>
                     <td><strong>${b.type}</strong></td>
                     <td><strong style="color: #be123c;">${parseInt(b.amount.replace('jpy:', ''), 10).toLocaleString()} 円</strong></td>
                     <td>${statusBadge}</td>
-                    <td>${payButton}</td>
+                    <td>
+                        <div style="display: flex; gap: 4px; align-items: center;">
+                            ${payAction}
+                            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.75em; min-height: 28px; width: auto;" onclick="window.sns_show_invoice_drawer('${b.id}')">請求・書類 📄</button>
+                        </div>
+                    </td>
                 </tr>`;
             }).join('') || `<tr><td colspan="6" style="text-align: center; color: var(--text-sub);">請求データがありません。</td></tr>`;
 
@@ -463,7 +637,7 @@
                 const roleStyle = u.role === 'ロール:学生' ? 'background: #ecfdf5; color: #065f46;' : 'background: #eff6ff; color: #1e40af;';
                 const detailField = u.role === 'ロール:学生' ? u.profile.sport : u.profile.sport || '総合枠';
                 return `<tr>
-                    <td><code>${u.id.slice(0, 15)}...</code></td>
+                    <td><code>${u.id.slice(0, 10)}...</code></td>
                     <td><span class="badge" style="${roleStyle}">${roleLabel}</span></td>
                     <td><strong>${u.profile.name || '未登録'}</strong></td>
                     <td>${detailField}</td>
@@ -479,6 +653,10 @@
             const success = dispatch({ type: 'PAY_BILL', payload: { billId } });
             if (success) {
                 renderAdmin();
+                // Keep drawer updated if open
+                if (currentBillId === billId) {
+                    window.sns_show_invoice_drawer(billId);
+                }
             }
         };
 
@@ -493,6 +671,192 @@
             const logStr = localStorage.getItem('sns_events') || '[]';
             navigator.clipboard.writeText(logStr);
             alert('JSONイベントログをクリップボードにコピーしました！');
+        };
+
+        // Invoice drawer wiring
+        window.sns_show_invoice_drawer = (billId) => {
+            currentBillId = billId;
+            const state = store.REAL_state;
+            const bill = state.billing.find(b => b.id === billId);
+            if (!bill) return;
+
+            const match = state.matches[bill.matchId];
+            if (!match) return;
+
+            const corp = state.users[match.corpId];
+            const corpName = corp?.profile.name || '〇〇株式会社';
+            const students = match.studentIds.map(id => state.users[id]?.profile.name || '学生').join('・');
+            const amountNum = parseInt(bill.amount.replace('jpy:', ''), 10);
+
+            // Generated email draft text
+            const emailDraft = `件名：【ご請求】Student Athlete Scout SNS 面談セッション手数料について
+
+${corpName}
+採用担当者様
+
+平素は大変お世話になっております。
+Student Athlete Scout SNS 事務局でございます。
+
+この度は、体育会学生（${students}）との面談セッション設定（承諾）をいただき、誠にありがとうございます。
+
+本セッションに係る手数料につきまして、以下の通りご請求申し上げます。
+本メールに添付、または下記内容をご確認の上、期日までにお振り込みをお願いいたします。
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+【ご請求内容】
+■ ご請求項目：${bill.type}（${match.interviewType === 'タイプ:ペア' ? 'ペア面談' : '単体面談'}）
+■ 請求ID：${bill.id}
+■ 対象学生：${students}
+■ 請求金額：¥${amountNum.toLocaleString()}- (消費税込み)
+■ お支払期日：面談日の翌月末日
+
+【お振込先】
+スポーツ銀行 司令塔支店
+普通預金：1234567
+口座名義：アスリートスカウトジムキョク
+
+※振込手数料はお客様負担にてお願い申し上げます。
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+本件の決済お支払いが確認でき次第、マイページ上での「面談チャットルーム」ロックが自動解除され、学生様（ペアの場合は親友同士も含めた3者）とのダイレクトメッセージが利用可能になります。
+
+何卒よろしくお願い申し上げます。
+
+──────────────────────
+Student Athlete Scout SNS 事務局
+メール：support@athlete-scout-sns.com
+URL：https://athlete-scout-sns.pages.dev/
+──────────────────────`;
+
+            document.getElementById('email-text-draft').innerText = emailDraft;
+
+            // Generate beautifully formatted printable business invoice sheet
+            const formattedDate = new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+            const dueDate = new Date();
+            dueDate.setMonth(dueDate.getMonth() + 1);
+            dueDate.setDate(0); // Last day of next month
+            const formattedDueDate = dueDate.toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' });
+
+            const invoiceHtml = `
+            <div style="font-family: sans-serif; padding: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px;">
+                    <div>
+                        <h2 style="font-size: 1.8em; font-weight: 800; border-bottom: 2px solid #000; padding-bottom: 4px; letter-spacing: 0.1em;">求 人 請 求 書</h2>
+                        <div style="font-size: 1.1em; margin-top: 15px;"><strong>${corpName} 御中</strong></div>
+                    </div>
+                    <div style="text-align: right; font-size: 0.9em;">
+                        <div>請求番号：${bill.id.slice(0, 15)}</div>
+                        <div>発行日：${formattedDate}</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 25px;">
+                    <div>
+                        <p style="font-size: 0.9em; margin-bottom: 5px;">下記の通りご請求申し上げます。</p>
+                        <div style="font-size: 1.3em; border-bottom: 2px double #000; padding: 4px 8px; font-weight: bold;">
+                            請求金額： <span style="font-size: 1.2em;">¥${amountNum.toLocaleString()}-</span> <span style="font-size: 0.6em; font-weight: normal;">(税込)</span>
+                        </div>
+                    </div>
+                    <div style="text-align: right; font-size: 0.9em;">
+                        <strong style="font-size: 1.1em;">Athlete Scout SNS 事務局</strong><br>
+                        東京都新宿区霞ヶ丘町1-1<br>
+                        競技フィールドビル 司令塔4F<br>
+                        登録番号：T1234567890123
+                    </div>
+                </div>
+
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px; font-size: 0.9em;">
+                    <thead>
+                        <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000; background: #f8fafc;">
+                            <th style="padding: 10px; border-bottom: 1px solid #000; background: transparent;">品名 / サービス内容</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 1px solid #000; background: transparent;">数量</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 1px solid #000; background: transparent;">単価</th>
+                            <th style="padding: 10px; text-align: right; border-bottom: 1px solid #000; background: transparent;">金額</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #e2e5eb;">
+                            <td style="padding: 10px;">
+                                <strong>${bill.type} (対象学生: ${students})</strong><br>
+                                <span style="font-size: 0.85em; color: #475569;">※セッション設定の手数料です。決済後にチャットが解放されます。</span>
+                            </td>
+                            <td style="padding: 10px; text-align: right;">1</td>
+                            <td style="padding: 10px; text-align: right;">¥${amountNum.toLocaleString()}</td>
+                            <td style="padding: 10px; text-align: right;">¥${amountNum.toLocaleString()}</td>
+                        </tr>
+                        <tr style="border-top: 2px solid #000;">
+                            <td colspan="2"></td>
+                            <td style="padding: 10px; font-weight: bold; text-align: right;">小計 (税抜)：</td>
+                            <td style="padding: 10px; text-align: right;">¥${Math.floor(amountNum / 1.1).toLocaleString()}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"></td>
+                            <td style="padding: 10px; font-weight: bold; text-align: right;">消費税額 (10%)：</td>
+                            <td style="padding: 10px; text-align: right;">¥${(amountNum - Math.floor(amountNum / 1.1)).toLocaleString()}</td>
+                        </tr>
+                        <tr style="border-top: 1px solid #000; border-bottom: 2px double #000; background: #f8fafc;">
+                            <td colspan="2"></td>
+                            <td style="padding: 10px; font-weight: bold; text-align: right; font-size: 1.1em;">合計金額 (税込)：</td>
+                            <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 1.1em;">¥${amountNum.toLocaleString()}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="border: 1px solid #cbd5e1; padding: 15px; border-radius: 4px; background: #f8fafc; font-size: 0.9em;">
+                    <strong>お支払期限： ${formattedDueDate}</strong><br>
+                    <p style="margin-top: 5px; font-size: 0.85em; color: var(--text-sub);">
+                        【お振込先】<br>
+                        スポーツ銀行 司令塔支店 普通預金 1234567<br>
+                        口座名義：アスリートスカウトジムキョク<br>
+                        ※お振込み手数料は、誠に恐れ入りますがお客様負担にてお願いいたします。
+                    </p>
+                </div>
+            </div>`;
+
+            document.getElementById('invoice-print-area').innerHTML = invoiceHtml;
+
+            // Display Drawer and Overlay
+            document.getElementById('drawer-overlay').style.display = 'block';
+            const drawer = document.getElementById('drawer');
+            drawer.style.display = 'flex';
+            setTimeout(() => drawer.classList.add('open'), 10);
+            window.sns_switch_tab('email'); // Reset to email tab
+        };
+
+        window.sns_close_drawer = () => {
+            document.getElementById('drawer-overlay').style.display = 'none';
+            const drawer = document.getElementById('drawer');
+            drawer.classList.remove('open');
+            setTimeout(() => drawer.style.display = 'none', 300);
+        };
+
+        window.sns_switch_tab = (tab) => {
+            const btnEmail = document.getElementById('tab-btn-email');
+            const btnInvoice = document.getElementById('tab-btn-invoice');
+            const contentEmail = document.getElementById('tab-content-email');
+            const contentInvoice = document.getElementById('tab-content-invoice');
+
+            if (tab === 'email') {
+                btnEmail.classList.add('active');
+                btnInvoice.classList.remove('active');
+                contentEmail.style.display = 'block';
+                contentInvoice.style.display = 'none';
+            } else {
+                btnEmail.classList.remove('active');
+                btnInvoice.classList.add('active');
+                contentEmail.style.display = 'none';
+                contentInvoice.style.display = 'block';
+            }
+        };
+
+        window.sns_copy_text = (elementId) => {
+            const el = document.getElementById(elementId);
+            navigator.clipboard.writeText(el.innerText || el.textContent);
+            alert('クリップボードに請求メール下書きをコピーしました！');
+        };
+
+        window.sns_print_invoice = () => {
+            window.print();
         };
 
         // Render once on mount
