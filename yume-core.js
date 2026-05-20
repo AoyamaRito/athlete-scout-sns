@@ -48,6 +48,9 @@ export class EventStore {
           tempState = reducer(tempState, ev);
         }
         this.REAL_state = tempState;
+      } else {
+        this.events = [];
+        this.REAL_state = JSON.parse(JSON.stringify(this.initialState));
       }
     } catch (e) {
       console.error('Failed to load/replay events from localStorage:', e);
