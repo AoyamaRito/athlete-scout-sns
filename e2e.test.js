@@ -38,7 +38,7 @@ async function runTest() {
   assert.strictEqual(successInterview, true, 'Setting interview should be successful');
   assert.strictEqual(store.REAL_state.matches[matchId].status, MatchStatus.INTERVIEW_SET);
   
-  const interviewBill = store.REAL_state.billing.find(b => b.type === 'fee:interview');
+  const interviewBill = store.REAL_state.billing.find(b => b.type === '手数料:面談');
   assert.ok(interviewBill, 'Interview billing record should exist');
   assert.strictEqual(interviewBill.amount, 'jpy:15000', 'Pair interview fee should be jpy:15000');
 
@@ -47,7 +47,7 @@ async function runTest() {
   assert.strictEqual(successHire, true, 'Marking hired should be successful');
   assert.strictEqual(store.REAL_state.matches[matchId].status, MatchStatus.HIRED);
 
-  const hireBill = store.REAL_state.billing.find(b => b.type === 'fee:hire');
+  const hireBill = store.REAL_state.billing.find(b => b.type === '手数料:採用');
   assert.ok(hireBill, 'Hire billing record should exist');
   assert.strictEqual(hireBill.amount, 'jpy:350000', 'Pair hire fee should be jpy:350000');
 

@@ -1,7 +1,7 @@
 // @yume-format: 1
 /**
- * ui.yume.js - レンダリングロジック（日本語 & QR認証対応）
- * @tags: ui, render
+ * ui.yume.js - レンダリングロジック（学生特化型）
+ * @tags: ui, render, student-focus
  */
 
 import { Roles, MatchStatus, checkPairEligibility } from './BIBLE.js';
@@ -21,93 +21,131 @@ export function render(container, state, dispatch) {
     return;
   }
 
-  const users = Object.values(state.users);
-  const students = users.filter(u => u.role === Roles.STUDENT);
-  const corps = users.filter(u => u.role === Roles.CORPORATION);
+  const currentUser = state.users[state.REAL_auth.publicId] || {
+    id: state.REAL_auth.publicId,
+    role: Roles.STUDENT,
+    profile: { name: '新規ユーザー', sport: '', position: '', achievements: '', selfPR: '', friends: [] }
+  };
 
-  let html = `<div style="margin-bottom: 20px; text-align: right;">
-    <span>ログイン中ID: <code>${state.REAL_auth.publicId.slice(0, 8)}...</code></span>
-    <button class="btn btn-secondary" onclick="window.sns_dispatch({type:'SET_AUTH', payload:null})">ログアウト</button>
+  let html = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+    <h2 style="margin: 0;">マイページ</h2>
+    <div>
+      <span style="font-size: 0.8em; color: #65676b;">ID: ${state.REAL_auth.publicId.slice(0, 8)}...</span>
+      <button class="btn btn-secondary" onclick="window.sns_dispatch({type:'SET_AUTH', payload:null})">ログアウト</button>
+    </div>
   </div>`;
 
-  // 1. 学生視点
+  // 1. プロフィール編集
   html += `<div class="section">
-    <h2>学生プロフィール (シミュレーション)</h2>`;
-  
-  students.forEach(s => {
-    const otherStudents = students.filter(os => os.id !== s.id);
-    html += `<div class="user-card">
-      <div>
-        <strong>${s.profile.name}</strong> (${s.profile.sport})<br>
-        親友リスト: ${s.profile.friends.map(id => state.users[id]?.profile.name).join(', ') || 'なし'}
-      </div>
-      <div>
-        ${otherStudents.map(os => {
-          const isFriend = s.profile.friends.includes(os.id);
-          const isMutual = isFriend && os.profile.friends.includes(s.id);
-          return `<button class="btn ${isFriend ? 'btn-secondary' : ''}" 
-            onclick="window.sns_dispatch({type:'SET_FRIEND', payload:{studentId:'${s.id}', friendId:'${os.id}'}})">
-            ${isFriend ? (isMutual ? '親友（相互） ❤️' : '申請中') : '親友に設定'}
-          </button>`;
-        }).join('')}
-      </div>
-    </div>`;
-  });
-  html += `</div>`;
+    <h3>プロフィール編集</h3>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      <input type="text" id="edit-name" placeholder="氏名" value="${currentUser.profile.name}" class="input-field">
+      <input type="text" id="edit-sport" placeholder="競技種目" value="${currentUser.profile.sport}" class="input-field">
+      <input type="text" id="edit-position" placeholder="ポジション・役割" value="${currentUser.profile.position}" class="input-field">
+      <textarea id="edit-achievements" placeholder="競技実績" class="input-field" style="height: 60px;">${currentUser.profile.achievements}</textarea>
+      <textarea id="edit-selfPR" placeholder="自己PR" class="input-field" style="height: 100px;">${currentUser.profile.selfPR}</textarea>
+      <button class="btn" onclick="window.sns_save_profile()">保存する</button>
+    </div>
+  </div>`;
 
-  // 2. 企業視点
+  // 2. 親友リンク（ペアスカウトの要）
+  const otherStudents = Object.values(state.users).filter(u => u.id !== currentUser.id && u.role === Roles.STUDENT);
   html += `<div class="section">
-    <h2>企業スカウト画面</h2>`;
-  
-  corps.forEach(c => {
-    html += `<h3>企業名: ${c.profile.name}</h3>`;
-    
-    // ペア発見
-    html += `<h4>仲良しペアを発見</h4>`;
-    let pairCount = 0;
-    for (let i = 0; i < students.length; i++) {
-      for (let j = i + 1; j < students.length; j++) {
-        const s1 = students[i];
-        const s2 = students[j];
-        if (checkPairEligibility(s1, s2)) {
-          pairCount++;
-          html += `<div class="user-card" style="border-color: #1877f2; background: #f0f7ff;">
-            <div>
-              <strong>注目ペア: ${s1.profile.name} ＆ ${s2.profile.name}</strong><br>
-              ${s1.profile.sport}部の親友同士です！
-            </div>
-            <button class="btn" onclick="window.sns_dispatch({type:'SEND_SCOUT', payload:{corpId:'${c.id}', studentIds:['${s1.id}', '${s2.id}']}})">
-              二人まとめてスカウト
-            </button>
-          </div>`;
-        }
-      }
-    }
-    if (pairCount === 0) html += `<p>現在、親友リンク済みのペアはいません。</p>`;
+    <h3>親友リンク</h3>
+    <p style="font-size: 0.8em; color: #65676b;">※相互に登録すると「ペアスカウト」の対象になります。</p>
+    ${otherStudents.length === 0 ? '<p>他の学生ユーザーがまだいません。</p>' : ''}
+    ${otherStudents.map(os => {
+      const isFriend = currentUser.profile.friends.includes(os.id);
+      const isMutual = isFriend && os.profile.friends.includes(currentUser.id);
+      return `<div class="user-card">
+        <div><strong>${os.profile.name}</strong> (${os.profile.sport})</div>
+        <button class="btn ${isFriend ? 'btn-secondary' : ''}" 
+          onclick="window.sns_dispatch({type:'SET_FRIEND', payload:{studentId:'${currentUser.id}', friendId:'${os.id}'}})">
+          ${isFriend ? (isMutual ? '親友（相互） ❤️' : '申請中') : '親友に設定'}
+        </button>
+      </div>`;
+    }).join('')}
+  </div>`;
 
-    // マッチング状況
-    html += `<h4>スカウト・選考状況</h4>`;
-    const myMatches = Object.values(state.matches).filter(m => m.corpId === c.id);
-    if (myMatches.length === 0) html += `<p>スカウト履歴はありません。</p>`;
-    
-    myMatches.forEach(m => {
-      const names = m.studentIds.map(id => state.users[id]?.profile.name).join(' ＆ ');
-      html += `<div class="user-card">
+  // 3. 受信したスカウト
+  const myMatches = Object.values(state.matches).filter(m => m.studentIds.includes(currentUser.id));
+  html += `<div class="section">
+    <h3>届いているスカウト</h3>
+    ${myMatches.length === 0 ? '<p>まだスカウトは届いていません。</p>' : ''}
+    ${myMatches.map(m => {
+      const isPair = m.interviewType === 'タイプ:ペア';
+      const partnerId = m.studentIds.find(id => id !== currentUser.id);
+      const partnerName = state.users[partnerId]?.profile.name;
+      
+      return `<div class="user-card" style="${isPair ? 'border-left: 5px solid #1877f2;' : ''}">
         <div>
-          <strong>${names}</strong><br>
-          現在のステータス: <code>${m.status}</code> (${m.interviewType})
+          <span class="friend-badge" style="background: ${isPair ? '#e7f3ff' : '#f0f2f5'};">
+            ${isPair ? 'ペアスカウト' : '単体スカウト'}
+          </span>
+          <div style="margin-top: 5px;">
+            <strong>企業: ${state.users[m.corpId]?.profile.name || '不明'}</strong><br>
+            ${isPair ? `<span style="font-size: 0.9em; color: #65676b;">パートナー: ${partnerName} さん</span>` : ''}
+          </div>
+          <div style="font-size: 0.8em; color: #65676b; margin-top: 5px;">ステータス: ${m.status}</div>
         </div>
         <div>
-          ${m.status === MatchStatus.SCOUTED ? 
-            `<button class="btn" onclick="window.sns_dispatch({type:'SET_INTERVIEW', payload:{matchId:'${m.id}'}})">面談を確定する</button>` : ''}
-          ${m.status === MatchStatus.INTERVIEW_SET ? 
-            `<button class="btn" onclick="window.sns_dispatch({type:'MARK_HIRED', payload:{matchId:'${m.id}'}})">採用を確定する</button>` : ''}
-          ${m.status === MatchStatus.HIRED ? '<span style="color: green; font-weight: bold;">内定・承諾済み</span>' : ''}
+          ${m.status === MatchStatus.SCOUTED ? `
+            <button class="btn" onclick="window.sns_dispatch({type:'SET_INTERVIEW', payload:{matchId:'${m.id}'}})">承諾する</button>
+            <button class="btn btn-secondary" style="margin-left: 5px;">辞退</button>
+          ` : ''}
+          ${m.status === MatchStatus.INTERVIEW_SET ? '<span style="color: #1877f2; font-weight: bold;">面談進行中</span>' : ''}
+          ${m.status === MatchStatus.HIRED ? '<span style="color: green; font-weight: bold;">採用確定！</span>' : ''}
         </div>
       </div>`;
+    }).join('')}
+  </div>`;
+
+  // 4. (デバッグ用) 企業シミュレーター
+  html += `<div class="section" style="background: #fff9e6; border-color: #ffe58f;">
+    <h4 style="margin-top: 0;">[開発用] 企業シミュレーター</h4>
+    <p style="font-size: 0.8em;">※自分に対してスカウトを送るテスト用機能です。</p>
+    <button class="btn btn-secondary" onclick="window.sns_sim_single_scout()">自分に単体スカウトを送る</button>
+    <button class="btn btn-secondary" onclick="window.sns_sim_pair_scout()" style="margin-left: 10px;">親友とペアスカウトを送る</button>
+  </div>`;
+
+  // Event Handlers
+  window.sns_save_profile = () => {
+    dispatch({
+      type: 'UPDATE_PROFILE',
+      payload: {
+        userId: currentUser.id,
+        profile: {
+          name: document.getElementById('edit-name').value,
+          sport: document.getElementById('edit-sport').value,
+          position: document.getElementById('edit-position').value,
+          achievements: document.getElementById('edit-achievements').value,
+          selfPR: document.getElementById('edit-selfPR').value
+        }
+      }
     });
-  });
-  html += `</div>`;
+    // Ensure user exists in state for simulator
+    dispatch({
+      type: 'USER_REGISTER',
+      payload: { id: currentUser.id, role: Roles.STUDENT, name: document.getElementById('edit-name').value, sport: document.getElementById('edit-sport').value }
+    });
+  };
+
+  window.sns_sim_single_scout = () => {
+    const corpId = 'sim:corp';
+    dispatch({ type: 'USER_REGISTER', payload: { id: corpId, role: Roles.CORPORATION, name: 'テスト企業' } });
+    dispatch({ type: 'SEND_SCOUT', payload: { corpId, studentIds: [currentUser.id] } });
+  };
+
+  window.sns_sim_pair_scout = () => {
+    const corpId = 'sim:corp';
+    const partnerId = currentUser.profile.friends[0];
+    if (!partnerId || !state.users[partnerId]?.profile.friends.includes(currentUser.id)) {
+      alert("親友リンク（相互）が成立している相手がいません。");
+      return;
+    }
+    dispatch({ type: 'USER_REGISTER', payload: { id: corpId, role: Roles.CORPORATION, name: 'テスト企業' } });
+    dispatch({ type: 'SEND_SCOUT', payload: { corpId, studentIds: [currentUser.id, partnerId] } });
+  };
 
   window.sns_dispatch = dispatch;
   container.innerHTML = html;
@@ -115,16 +153,16 @@ export function render(container, state, dispatch) {
 
 function renderAuth(container, state, dispatch) {
   let html = `<div class="section" style="text-align: center; padding: 40px 20px;">
-    <h2 style="margin-bottom: 30px;">ログイン</h2>
+    <h2 style="margin-bottom: 30px;">学生ログイン</h2>
     
     <div style="margin-bottom: 30px;">
-      <p style="color: #65676b; margin-bottom: 20px;">QR鍵（秘密鍵）を選択して認証してください</p>
+      <p style="color: #65676b; margin-bottom: 20px;">QR鍵（秘密鍵）を選択してログインしてください</p>
       <input type="file" id="qr-input" style="display: none;" onchange="window.sns_handle_qr_file(this)">
-      <button class="btn" style="padding: 12px 24px; font-size: 1.1em;" onclick="document.getElementById('qr-input').click()">QR画像(鍵)を選択してログイン</button>
+      <button class="btn" style="padding: 12px 24px; font-size: 1.1em;" onclick="document.getElementById('qr-input').click()">QR画像を選択してログイン</button>
     </div>
     
-    <div style="margin-top: 40px; border-top: 1px solid #e4e6eb; pt: 20px;">
-      <a href="#" style="color: #1877f2; font-size: 0.85em; text-decoration: none;" onclick="window.sns_start_registration(); return false;">鍵をお持ちでない方はこちら（新規発行）</a>
+    <div style="margin-top: 40px; border-top: 1px solid #e4e6eb; padding-top: 20px;">
+      <a href="#" style="color: #1877f2; font-size: 0.85em; text-decoration: none;" onclick="window.sns_start_registration(); return false;">新しく学生アカウントを作る（鍵発行）</a>
     </div>
     
     <div id="qr-display" style="margin-top: 20px;"></div>
@@ -135,20 +173,19 @@ function renderAuth(container, state, dispatch) {
     const qrEl = document.getElementById('qr-display');
     qrEl.innerHTML = `
     <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 1px solid #1877f2; margin-top: 20px;">
-      <p style="color: #050505; font-weight: bold;">新しい鍵が発行されました！</p>
-      <p style="font-size: 0.9em; color: #65676b;">この鍵（画像）をダウンロードして大切に保管してください。</p>
+      <p style="color: #050505; font-weight: bold;">学生用パスポートが発行されました！</p>
+      <p style="font-size: 0.9em; color: #65676b;">この鍵画像を保存してください。これがあなたの「ログイン証」になります。</p>
       <div id="qrcode" style="margin: 20px 0;"></div>
       <div style="margin-bottom: 20px;">
-        <button class="btn" onclick="window.sns_download_qr()">鍵をWebP画像として保存</button>
+        <button class="btn" onclick="window.sns_download_qr()">鍵画像をダウンロード</button>
       </div>
-      <p style="font-size: 0.7em; word-break: break-all; color: #8a8d91; background: #fff; padding: 10px; border-radius: 4px;">鍵文字列: ${recoveryKey}</p>
+      <p style="font-size: 0.7em; word-break: break-all; color: #8a8d91; background: #fff; padding: 10px; border-radius: 4px;">鍵ID: ${publicId}</p>
       <div style="margin-top: 20px;">
         <button class="btn btn-secondary" onclick="location.reload()">ログイン画面に戻る</button>
       </div>
       <canvas id="qr-canvas" style="display: none;"></canvas>
     </div>`;
     
-    // Generate QR using vendor library
     const typeNumber = 0;
     const errorCorrectionLevel = 'H';
     const qr = qrcode(typeNumber, errorCorrectionLevel);
@@ -158,26 +195,21 @@ function renderAuth(container, state, dispatch) {
     const qrContainer = document.getElementById('qrcode');
     qrContainer.innerHTML = qr.createImgTag(5);
     
-    // Download logic
     window.sns_download_qr = () => {
       const img = qrContainer.querySelector('img');
       const canvas = document.getElementById('qr-canvas');
       const ctx = canvas.getContext('2d');
-      
-      // Ensure image is loaded
       const runDownload = () => {
-        canvas.width = img.width + 40; // Add padding
+        canvas.width = img.width + 40;
         canvas.height = img.height + 40;
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 20, 20);
-        
         const link = document.createElement('a');
-        link.download = `athlete-sns-key-${publicId.slice(0,8)}.webp`;
+        link.download = `student-key-${publicId.slice(0,8)}.webp`;
         link.href = canvas.toDataURL('image/webp');
         link.click();
       };
-      
       if (img.complete) runDownload();
       else img.onload = runDownload;
     };
@@ -186,7 +218,6 @@ function renderAuth(container, state, dispatch) {
   window.sns_handle_qr_file = async (input) => {
     const file = input.files[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = async (e) => {
       const img = new Image();
@@ -196,26 +227,23 @@ function renderAuth(container, state, dispatch) {
         canvas.width = img.width;
         canvas.height = img.height;
         ctx.drawImage(img, 0, 0);
-
         const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const code = jsQR(imageData.data, imageData.width, imageData.height);
-
         if (code) {
           const result = await authenticateWithKey(code.data);
           if (result.success) {
             dispatch({ type: 'SET_AUTH', payload: { publicId: result.publicId, identity: result.identity } });
-          } else {
-            alert("認証に失敗しました: " + result.error);
-          }
-        } else {
-          alert("画像からQRコードを検出できませんでした。別の画像をお試しください。");
-        }
+            // Ensure student is registered if new
+            dispatch({ type: 'USER_REGISTER', payload: { id: result.publicId, role: Roles.STUDENT, name: '未設定' } });
+          } else { alert("認証に失敗しました。"); }
+        } else { alert("QRコードが読み取れませんでした。"); }
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
-    input.value = ''; // Reset for next selection
+    input.value = '';
   };
+  
   window.sns_dispatch = dispatch;
   container.innerHTML = html;
 }

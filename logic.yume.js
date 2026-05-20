@@ -38,10 +38,27 @@ export function snsReducer(state, event) {
         role: payload.role,
         profile: { 
           name: payload.name, 
-          sport: payload.sport || '', 
+          sport: payload.sport || '',
+          position: payload.position || '',
+          achievements: payload.achievements || '',
+          selfPR: payload.selfPR || '',
           friends: [] 
         }
       };
+      break;
+    }
+
+    case 'UPDATE_PROFILE': {
+      const user = users[payload.userId];
+      if (user) {
+        users[payload.userId] = {
+          ...user,
+          profile: {
+            ...user.profile,
+            ...payload.profile
+          }
+        };
+      }
       break;
     }
 

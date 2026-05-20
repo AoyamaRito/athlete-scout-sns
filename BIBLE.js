@@ -50,15 +50,34 @@ export const Fees = {
 };
 
 /**
- * QR認証仕様
- * - 初回登録時に「秘密鍵」をQR画像として発行。
- * - 以降、その画像を読み込むことで認証（ログイン）を行う。
- * - サーバー鍵との照合により、なりすましを防止。
+ * 学生プロフィールの詳細定義
  */
-export const AuthSpec = {
-  QR_VERSION: 'IDAUTH-V2',
-  ALGO: 'Ed25519 + HMAC-SHA256'
+export const StudentProfileSpec = {
+  fields: {
+    name: '氏名',
+    sport: '競技種目',
+    position: 'ポジション・役割',
+    achievements: '競技実績（大会結果など）',
+    selfPR: '自己PR',
+    bestFriendId: '親友ID（ペアスカウト用）'
+  }
 };
+
+/**
+ * 学生側の体験フロー
+ * 1. QR鍵でログイン
+ * 2. プロフィール（競技実績、自己PR）を入力
+ * 3. 仲の良い友人と「親友リンク」を締結
+ * 4. 企業からの「単体スカウト」または「ペアスカウト」を受信
+ * 5. 面談の承諾・辞退を選択
+ */
+export const StudentExperience = [
+  'LOGIN_QR',
+  'EDIT_PROFILE',
+  'LINK_FRIEND',
+  'RECEIVE_SCOUT',
+  'RESPOND_INTERVIEW'
+];
 
 /**
  * Constraint: Transition Guard

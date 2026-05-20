@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体育会系学生スカウトSNS - 採用担当者向け「タッグ採用」のご案内</title>
+  <style>
+    :root {
+      --primary-color: #1877f2;
+      --primary-hover: #166fe5;
+      --accent-color: #f5a623;
+      --accent-hover: #e0951a;
+      --bg-color: #f0f2f5;
+      --card-bg: #ffffff;
+      --text-main: #050505;
+      --text-sub: #65676b;
+      --border-color: #e4e6eb;
+      --success-color: #42b72a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-color);
+      line-height: 1.6;
+    }
+
+    /* Layout structure */
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .header-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4em;
+      font-weight: bold;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-badge {
+      background-color: var(--accent-color);
+      color: white;
+      font-size: 0.5em;
+      padding: 3px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 24px;
+      font-size: 1em;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s, transform 0.1s;
+      text-align: center;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background-color: #e4e6eb;
+      color: #050505;
+    }
+
+    .btn-secondary:hover {
+      background-color: #d8dadf;
+    }
+
+    .btn-accent {
+      background-color: var(--accent-color);
+      color: white;
+    }
+
+    .btn-accent:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1877f2 0%, #0d4b9c 100%);
+      color: white;
+      padding: 80px 20px;
+      text-align: center;
+      border-radius: 0 0 40px 40px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    .hero-tag {
+      display: inline-block;
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: bold;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.4);
+    }
+
+    .hero h1 {
+      font-size: 2.5em;
+      font-weight: 800;
+      line-height: 1.3;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 1.2em;
+      max-width: 800px;
+      margin: 0 auto 35px;
+      opacity: 0.9;
+    }
+
+    .hero-badge-pricing {
+      display: inline-flex;
+      background-color: var(--accent-color);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+      100% { transform: scale(1); }
+    }
+
+    /* Section styling */
+    .section {
+      background-color: var(--card-bg);
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 40px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    }
+
+    .section-title {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 15px;
+      text-align: center;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 4px;
+      background-color: var(--primary-color);
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    .section-desc {
+      text-align: center;
+      color: var(--text-sub);
+      max-width: 700px;
+      margin: 0 auto 40px;
+    }
+
+    /* Feature Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .card {
+      background-color: #f7f8fa;
+      border-radius: 10px;
+      padding: 30px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+    }
+
+    .card-icon {
+      font-size: 2.5em;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .card h4 {
+      font-size: 1.2em;
+      margin-bottom: 12px;
+      color: var(--primary-color);
+    }
+
+    .card p {
+      color: var(--text-sub);
+      font-size: 0.95em;
+    }
+
+    /* Pricing Layout */
+    .pricing-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-top: 30px;
+    }
+
+    .price-card {
+      background-color: var(--card-bg);
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      padding: 35px 25px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .price-card.featured {
+      border-color: var(--accent-color);
+      box-shadow: 0 8px 24px rgba(245, 166, 35, 0.15);
+    }
+
+    .price-card.featured::before {
+      content: 'おすすめ';
+      position: absolute;
+      top: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: var(--accent-color);
+      color: white;
+      font-size: 0.85em;
+      font-weight: bold;
+      padding: 4px 15px;
+      border-radius: 20px;
+    }
+
+    .price-card-title {
+      font-size: 1.3em;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .price-tag {
+      font-size: 1.8em;
+      font-weight: 800;
+      color: var(--text-main);
+      margin: 15px 0;
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .price-tag span {
+      font-size: 0.5em;
+      color: var(--text-sub);
+      font-weight: normal;
+    }
+
+    .price-tag-value {
+      font-family: monospace;
+      color: var(--primary-color);
+    }
+
+    .price-features {
+      list-style: none;
+      text-align: left;
+      margin: 25px 0;
+      font-size: 0.95em;
+    }
+
+    .price-features li {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .price-features li::before {
+      content: '✓';
+      color: var(--success-color);
+      font-weight: bold;
+    }
+
+    /* OK Button & Trial Area */
+    .trial-box {
+      background-color: #fff9e6;
+      border: 1px dashed var(--accent-color);
+      border-radius: 8px;
+      padding: 25px;
+      margin-top: 35px;
+      text-align: center;
+    }
+
+    .trial-box h4 {
+      color: #946306;
+      margin-bottom: 10px;
+      font-size: 1.15em;
+    }
+
+    .invoice-preview {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 20px;
+      max-width: 400px;
+      margin: 20px auto 0;
+      text-align: left;
+      font-family: monospace;
+      font-size: 0.85em;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      display: none;
+    }
+
+    .invoice-header {
+      border-bottom: 1px double #000;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    /* Calculator */
+    .calc-container {
+      background-color: #f7f8fa;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 30px;
+      margin-top: 30px;
+    }
+
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .calc-row:last-child {
+      border-bottom: none;
+    }
+
+    .calc-label {
+      font-weight: 600;
+    }
+
+    .calc-desc {
+      font-size: 0.8em;
+      color: var(--text-sub);
+      display: block;
+      font-weight: normal;
+    }
+
+    .calc-input {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .calc-select, .calc-num {
+      padding: 8px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      background-color: white;
+      font-size: 0.95em;
+    }
+
+    .calc-result-box {
+      background-color: var(--primary-color);
+      color: white;
+      border-radius: 8px;
+      padding: 25px;
+      text-align: center;
+      margin-top: 25px;
+      box-shadow: 0 4px 10px rgba(24, 119, 242, 0.2);
+    }
+
+    .calc-result-title {
+      font-size: 0.9em;
+      opacity: 0.9;
+      text-transform: uppercase;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .calc-result-val {
+      font-size: 2.2em;
+      font-weight: 800;
+      font-family: monospace;
+      display: block;
+      margin: 5px 0;
+    }
+
+    .calc-result-tag {
+      background-color: rgba(255,255,255,0.2);
+      font-size: 0.85em;
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 1em;
+      background-color: white;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-color);
+    }
+
+    /* Footer */
+    footer {
+      background-color: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 40px 20px;
+      text-align: center;
+      font-size: 0.9em;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        🏟 Athlete Scout <span class="logo-badge">For Corp</span>
+      </div>
+      <div>
+        <a href="#trial" class="btn btn-accent" style="padding: 8px 16px; font-size: 0.9em;">無料試用を開始</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-tag">採用担当者向け特設LP</div>
+    <h1>孤独な採用から、タッグ採用へ。</h1>
+    <p>
+      体育会系学生同士の「親友リンク」から生まれる『ペアスカウト』。<br>
+      お互いを理解し支え合う最強の2人を同時に獲得することで、新入社員の離職率を未然にゼロへと近づけます。
+    </p>
+    <div class="hero-badge-pricing">
+      🎁 3ヶ月完全無料試用キャンペーン実施中
+    </div>
+    <div>
+      <a href="#trial" class="btn btn-accent" style="font-size: 1.1em; padding: 15px 35px; box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);">
+        今すぐ3ヶ月間無料でお試し
+      </a>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- Section 1: Features -->
+    <section class="section">
+      <h3 class="section-title">ペアスカウトがもたらす革新的な価値</h3>
+      <p class="section-desc">なぜ体育会系学生をペアでスカウト・採用すべきなのか？その理由をご説明します。</p>
+      
+      <div class="grid">
+        <div class="card">
+          <span class="card-icon">🤝</span>
+          <h4>本音を引き出す「ペア面談」</h4>
+          <p>
+            1対1の面接ではガチガチに取り繕っていた学生が、信頼を置く親友と同席するだけで、本来のコミュニケーション力や素の魅力、お互いの協力体制を抜群に発揮します。
+          </p>
+        </div>
+        <div class="card">
+          <span class="card-icon">⚡</span>
+          <h4>即戦力としての相乗効果</h4>
+          <p>
+            お互いのプレイスタイルや弱点を把握している2人だからこそ、配属初日からお互いをフォローし合い、単体採用を遥かに凌駕するシナジーを組織に呼び込みます。
+          </p>
+        </div>
+        <div class="card">
+          <span class="card-icon">🎯</span>
+          <h4>内定辞退・早期離職をゼロに</h4>
+          <p>
+            「親友と一緒に働く」という強固なつながりがメンタルの最大の支えとなり、内定後の他社への流出を完全に防ぎ、入社後の早期離職トラブルを完全に撲滅します。
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: Pricing -->
+    <section class="section" id="pricing">
+      <h3 class="section-title">明確かつシンプルな料金体系</h3>
+      <p class="section-desc">すべての料金は明快な Domain-Tagged Values に従って処理されます。追加の手数料は一切発生いたしません。</p>
+
+      <div class="pricing-cards">
+        <!-- Card 1 -->
+        <div class="price-card">
+          <div>
+            <div class="price-card-title">無料トライアル</div>
+            <div style="font-size: 0.9em; color: var(--text-sub);">すべての機能をノーリスクでお試し</div>
+            <div class="price-tag">
+              <span class="price-tag-value">jpy:0</span>
+              <span> / 最初の3ヶ月</span>
+            </div>
+            <ul class="price-features">
+              <li>学生へのスカウト送信無制限</li>
+              <li>学生のプロフィール見放題</li>
+              <li>「親友リンク」の相関図閲覧可能</li>
+            </ul>
+          </div>
+          <a href="#trial" class="btn btn-secondary">今すぐお試し</a>
+        </div>
+
+        <!-- Card 2 (Featured) -->
+        <div class="price-card featured">
+          <div>
+            <div class="price-card-title">継続プラン (9ヶ月)</div>
+            <div style="font-size: 0.9em; color: var(--text-sub); font-weight: bold; color: var(--accent-color);">無料試用終了後に移行可能</div>
+            <div class="price-tag">
+              <span class="price-tag-value">jpy:77000</span>
+              <span> / 継続9ヶ月間利用</span>
+            </div>
+            <ul class="price-features">
+              <li>無料試用（3ヶ月）終了後に適用</li>
+              <li>お気に入り学生のデータベース継続</li>
+              <li>追加9ヶ月使えて実質月額約8,500円</li>
+              <li><strong>OKボタン一発で請求書払い完了</strong></li>
+            </ul>
+          </div>
+          <a href="#trial-simulation" class="btn">OKボタン体験デモへ</a>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="price-card">
+          <div>
+            <div class="price-card-title">プロ営業員同行プラン</div>
+            <div style="font-size: 0.9em; color: var(--text-sub);">面談に慣れていない人事様向け</div>
+            <ul class="price-features" style="margin: 15px 0;">
+              <li>
+                <strong>シニア同行:</strong> 
+                <span class="price-tag-value" style="font-weight: bold; margin-left: 5px;">jpy:33000</span><span> / 回</span>
+              </li>
+              <li style="margin-top: 10px;">
+                <strong>ジュニア同行:</strong> 
+                <span class="price-tag-value" style="font-weight: bold; margin-left: 5px;">jpy:11000</span><span> / 回</span>
+              </li>
+            </ul>
+            <p style="font-size: 0.85em; color: var(--text-sub); text-align: left;">
+              当社のベテラン営業、もしくは若手営業担当者がカジュアル面談に立ち会い、学生の緊張をほぐし魅力的な動機づけをサポートします。
+            </p>
+          </div>
+          <a href="#simulator" class="btn btn-secondary" style="margin-top: 20px;">シミュレータで計算</a>
+        </div>
+      </div>
+
+      <!-- OK Button Virtual Experience -->
+      <div class="trial-box" id="trial-simulation">
+        <h4>💡 [インタラクティブ模擬体験] 3ヶ月試用終了時の『OKボタン』請求デモ</h4>
+        <p style="font-size: 0.9em; color: var(--text-sub); margin-bottom: 15px;">
+          3ヶ月の無料試用期間が終了した場面をシミュレートしています。以下の「OKボタン」を押すことで、瞬時に9ヶ月間の継続契約が確定し、7.7万円の請求書が自動発行されます。
+        </p>
+        <div id="trial-panel">
+          <div style="background-color: #ffffff; padding: 15px; border-radius: 6px; display: inline-block; margin-bottom: 15px; border: 1px solid var(--border-color);">
+            <strong style="color: #d0021b;">⚠️ 無料試用(3ヶ月)が終了しました。</strong><br>
+            <span style="font-size: 0.85em; color: var(--text-sub);">引き続き9ヶ月間サービスを利用しますか？</span>
+          </div>
+          <div>
+            <button class="btn btn-accent" style="padding: 12px 30px;" onclick="window.demo_trigger_invoice()">OK (継続利用・請求書発行)</button>
+          </div>
+        </div>
+
+        <!-- Populated Invoice -->
+        <div class="invoice-preview" id="invoice-box">
+          <div class="invoice-header">📄 御請求書 (INVOICE)</div>
+          <div><strong>宛先：</strong> 貴社 採用ご担当者様</div>
+          <div><strong>発行日：</strong> <span id="inv-date"></span></div>
+          <div style="margin: 15px 0; border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 10px 0;">
+            <strong>件名：</strong> アスリートスカウト継続利用（9ヶ月）<br>
+            <strong>請求金額：</strong> <span style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">jpy:77000</span> (税込価格: 77,000円)<br>
+            <strong>利用期間：</strong> 試用終了翌日から9ヶ月間
+          </div>
+          <div style="font-size: 0.8em; color: var(--text-sub);">
+            ※お支払期限は翌月末日となります。銀行振込にてお支払いください。<br>
+            ※本請求書はデモ体験用です。
+          </div>
+          <div style="text-align: right; margin-top: 15px;">
+            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8em;" onclick="window.demo_reset_invoice()">リセットする</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3: Calculator Simulator -->
+    <section class="section" id="simulator">
+      <h3 class="section-title">お見積もりシミュレーター</h3>
+      <p class="section-desc">ご希望のオプションや想定採用人数を選択し、最終支払費用をDomain-Tagged Value形式で瞬時にシミュレーションします。</p>
+
+      <div class="calc-container">
+        <!-- Row 1 -->
+        <div class="calc-row">
+          <div>
+            <span class="calc-label">基本利用プラン</span>
+            <span class="calc-desc">3ヶ月は完全無料、継続後は9ヶ月利用料が発生します。</span>
+          </div>
+          <div class="calc-input">
+            <select id="calc-plan" class="calc-select" onchange="window.calc_totals()">
+              <option value="trial">無料試用のみ (3ヶ月): jpy:0</option>
+              <option value="full" selected>試用後9ヶ月継続プラン: jpy:77000</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="calc-row">
+          <div>
+            <span class="calc-label">営業員同行（シニア）</span>
+            <span class="calc-desc">面談にベテラン営業員が立ち会います (jpy:33000 / 回)</span>
+          </div>
+          <div class="calc-input">
+            <input type="number" id="calc-senior" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+            <span>回</span>
+          </div>
+        </div>
+
+        <!-- Row 3 -->
+        <div class="calc-row">
+          <div>
+            <span class="calc-label">営業員同行（ジュニア）</span>
+            <span class="calc-desc">若手営業員が立ち会い、学生の心を開きます (jpy:11000 / 回)</span>
+          </div>
+          <div class="calc-input">
+            <input type="number" id="calc-junior" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+            <span>回</span>
+          </div>
+        </div>
+
+        <!-- Row 4 -->
+        <div class="calc-row">
+          <div>
+            <span class="calc-label">単体採用 成功人数</span>
+            <span class="calc-desc">単体での採用成果報酬 (jpy:200000 / 人)</span>
+          </div>
+          <div class="calc-input">
+            <input type="number" id="calc-single-hires" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+            <span>人</span>
+          </div>
+        </div>
+
+        <!-- Row 5 -->
+        <div class="calc-row">
+          <div>
+            <span class="calc-label">ペア採用 成功セット数 (2人一組)</span>
+            <span class="calc-desc">親友リンクお墨付きのペア採用ボーナス (jpy:350000 / 組)</span>
+          </div>
+          <div class="calc-input">
+            <input type="number" id="calc-pair-hires" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+            <span>組</span>
+          </div>
+        </div>
+
+        <!-- Calculated Result -->
+        <div class="calc-result-box">
+          <div class="calc-result-title">概算御見積額合計（REAL Value）</div>
+          <span class="calc-result-val" id="calc-total-display">jpy:77000</span>
+          <div class="calc-result-tag" id="calc-breakdown">基本継続 7.7万円</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: Contact Form -->
+    <section class="section" id="trial">
+      <h3 class="section-title">まずは3ヶ月、無料で試用を開始する</h3>
+      <p class="section-desc">企業名と連絡先をご登録いただくだけで、本日のログイン用QR認証証を発行・即時利用可能になります。</p>
+
+      <form onsubmit="window.demo_handle_submit(event)">
+        <div class="form-group">
+          <label class="form-label" for="corp-name">企業名 <span style="color: red;">*</span></label>
+          <input type="text" id="corp-name" class="form-control" placeholder="例：株式会社アスリートパワー" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-person">ご担当者様氏名 <span style="color: red;">*</span></label>
+          <input type="text" id="contact-person" class="form-control" placeholder="例：鈴木 大介" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="contact-email">連絡先メールアドレス <span style="color: red;">*</span></label>
+          <input type="email" id="contact-email" class="form-control" placeholder="例：hr@athlete-power.co.jp" required>
+        </div>
+        <button type="submit" class="btn btn-accent" style="width: 100%; padding: 15px; font-size: 1.1em; margin-top: 10px;">
+          アカウントを生成して無料試用を開始する
+        </button>
+      </form>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Athlete Scout SNS (Tagg Recruiting Platform) All Rights Reserved.</p>
+    <p style="font-size: 0.8em; margin-top: 10px; opacity: 0.7;">本プラットフォームのデータ及び規律は yume-develop 公理 A0〜A14 に準拠して厳密にガバナンスされています。</p>
+  </footer>
+
+  <!-- Scripts: Vanilla JS Interaction -->
+  <script>
+    // --- BIBLE-compliant tagged values helper ---
+    function formatJPY(amount) {
+      return "jpy:" + amount;
+    }
+
+    // --- Interactive Invoice Demo ---
+    function demo_trigger_invoice() {
+      const today = new Date();
+      const dateStr = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
+      
+      document.getElementById('inv-date').innerText = dateStr;
+      document.getElementById('trial-panel').style.display = 'none';
+      document.getElementById('invoice-box').style.display = 'block';
+    }
+
+    function demo_reset_invoice() {
+      document.getElementById('trial-panel').style.display = 'block';
+      document.getElementById('invoice-box').style.display = 'none';
+    }
+
+    // --- Real-time Simulator Logic ---
+    function calc_totals() {
+      // 1. LIFT: Pull states from DOM to numeric variables
+      const plan = document.getElementById('calc-plan').value;
+      const seniorCount = parseInt(document.getElementById('calc-senior').value) || 0;
+      const juniorCount = parseInt(document.getElementById('calc-junior').value) || 0;
+      const singleHires = parseInt(document.getElementById('calc-single-hires').value) || 0;
+      const pairHires = parseInt(document.getElementById('calc-pair-hires').value) || 0;
+
+      // 2. SCRATCH COMPUTATION: Numeric calculation
+      let planPrice = (plan === 'full') ? 77000 : 0;
+      let seniorPrice = seniorCount * 33000;
+      let juniorPrice = juniorCount * 11000;
+      let singleHiresPrice = singleHires * 200000;
+      let pairHiresPrice = pairHires * 350000;
+
+      let total = planPrice + seniorPrice + juniorPrice + singleHiresPrice + pairHiresPrice;
+
+      // 3. SETTLE & EXPOSE: Format back into domain-tagged string for display
+      const totalTagged = formatJPY(total);
+      document.getElementById('calc-total-display').innerText = totalTagged;
+
+      // Update Breakdown details (readable)
+      const parts = [];
+      if (planPrice > 0) parts.push("継続利用: 7.7万円");
+      if (seniorPrice > 0) parts.push("シニア同行: " + (seniorPrice/10000) + "万円");
+      if (juniorPrice > 0) parts.push("ジュニア同行: " + (juniorPrice/10000) + "万円");
+      if (singleHiresPrice > 0) parts.push("単体採用: " + (singleHiresPrice/10000) + "万円");
+      if (pairHiresPrice > 0) parts.push("ペア採用: " + (pairHiresPrice/10000) + "万円");
+
+      document.getElementById('calc-breakdown').innerText = parts.length > 0 ? parts.join(" + ") : "無料試用中 (基本料 jpy:0)";
+    }
+
+    // --- Submit handler for demo ---
+    function demo_handle_submit(e) {
+      e.preventDefault();
+      const corpName = document.getElementById('corp-name').value;
+      alert("ありがとうございます！「" + corpName + "」様の3ヶ月無料試用アカウント（Ed25519ログイン鍵）が正常に発行されました。登録メールアドレス宛てにお送りいたします。");
+    }
+
+    // Initial load bindings
+    window.demo_trigger_invoice = demo_trigger_invoice;
+    window.demo_reset_invoice = demo_reset_invoice;
+    window.calc_totals = calc_totals;
+    window.demo_handle_submit = demo_handle_submit;
+
+    // Run initial calc
+    calc_totals();
+  </script>
+</body>
+</html>
