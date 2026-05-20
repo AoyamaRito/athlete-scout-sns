@@ -163,6 +163,14 @@ export function snsReducer(state, event) {
       break;
     }
 
+    case 'CANCEL_SCOUT': {
+      // Cleanly delete the pending match since no fees are incurred yet
+      if (matches[payload.matchId]) {
+        delete matches[payload.matchId];
+      }
+      break;
+    }
+
     case 'SET_INTERVIEW': {
       const match = matches[payload.matchId];
       if (match) {
@@ -245,6 +253,11 @@ export function snsValidator(state, event) {
     if (!match) return false;
     const worlds = evalConstraint(StatusTransitions, { from: match.status, to: MatchStatus.REJECTED });
     if (worlds._contradiction || !worlds.worlds[0]._isValid) return false;
+  }
+
+  if (type === 'CANCEL_SCOUT') {
+    const match = state.matches[payload.matchId];
+    if (!match || match.status !== MatchStatus.SCOUTED) return false;
   }
 
   if (type === 'SET_INTERVIEW' || type === 'MARK_HIRED') {

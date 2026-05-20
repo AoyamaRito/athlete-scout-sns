@@ -978,7 +978,10 @@
         const isPair = m.interviewType === 'タイプ:ペア';
         let actionButtons = '';
         if (m.status === MatchStatus.SCOUTED) {
-          actionButtons = `<button class="btn btn-success" style="padding: 6px 12px; font-size: 0.75em; border-radius: 0;" onclick="window.portal_advance_match('${m.id}', 'SET_INTERVIEW')">面談を確定する</button>`;
+          actionButtons = `
+            <button class="btn btn-success" style="padding: 6px 12px; font-size: 0.75em; border-radius: 0;" onclick="window.portal_advance_match('${m.id}', 'SET_INTERVIEW')">面談を確定する</button>
+            <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75em; border-radius: 0; margin-left: 5px; border-color: #ddd; color: var(--text-sub);" onclick="window.portal_cancel_scout('${m.id}')">取り消し</button>
+          `;
         } else if (m.status === MatchStatus.INTERVIEW_SET) {
           actionButtons = `<button class="btn btn-accent" style="padding: 6px 12px; font-size: 0.75em; border-radius: 0;" onclick="window.portal_advance_match('${m.id}', 'MARK_HIRED')">採用確定（内定）</button>`;
         }
@@ -1007,6 +1010,13 @@
         REAL_state.billing.push({ id: `bill:${Date.now()}`, matchId: match.id, amount: match.interviewType === 'タイプ:ペア' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE, type: '手数料:採用' });
       }
       portal_render_all();
+    }
+    function portal_cancel_scout(matchId) {
+      if (confirm("このスカウトを取り消しますか？")) {
+        REAL_state.matches = { ...REAL_state.matches };
+        delete REAL_state.matches[matchId];
+        portal_render_all();
+      }
     }
     function portal_render_billing() {
       const container = document.getElementById('portal-billing-container');
@@ -1069,6 +1079,7 @@
     window.portal_handle_qr_upload = portal_handle_qr_upload;
     window.portal_send_scout = portal_send_scout;
     window.portal_advance_match = portal_advance_match;
+    window.portal_cancel_scout = portal_cancel_scout;
     window.smooth_scroll_to_portal = smooth_scroll_to_portal;
     calc_totals();
 
@@ -1135,6 +1146,13 @@
       lp_demo_render();
     }
 
+    function lp_demo_cancel_scout(matchId) {
+      if (lpDemoState.matches[matchId]) {
+        delete lpDemoState.matches[matchId];
+        lp_demo_render();
+      }
+    }
+
     function lp_demo_render() {
       const sContainer = document.getElementById('demo-student-list');
       let sHtml = '';
@@ -1176,7 +1194,10 @@
           const isPair = m.interviewType === 'タイプ:ペア';
           let btn = '';
           if (m.status === MatchStatus.SCOUTED) {
-            btn = `<button class="btn btn-success" style="padding: 5px 10px; font-size: 0.75em; border-radius:0;" onclick="window.lp_demo_advance_match('${m.id}', '${MatchStatus.INTERVIEW_SET}')">面談確定</button>`;
+            btn = `
+              <button class="btn btn-success" style="padding: 5px 10px; font-size: 0.75em; border-radius:0;" onclick="window.lp_demo_advance_match('${m.id}', '${MatchStatus.INTERVIEW_SET}')">面談確定</button>
+              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.75em; border-radius:0; margin-left: 5px; border-color: #ddd; color: var(--text-sub);" onclick="window.lp_demo_cancel_scout('${m.id}')">取り消し</button>
+            `;
           } else if (m.status === MatchStatus.INTERVIEW_SET) {
             btn = `<button class="btn btn-accent" style="padding: 5px 10px; font-size: 0.75em; border-radius:0;" onclick="window.lp_demo_advance_match('${m.id}', '${MatchStatus.HIRED}')">採用確定</button>`;
           } else {
@@ -1215,6 +1236,7 @@
     window.lp_demo_link_friend = lp_demo_link_friend;
     window.lp_demo_send_scout = lp_demo_send_scout;
     window.lp_demo_advance_match = lp_demo_advance_match;
+    window.lp_demo_cancel_scout = lp_demo_cancel_scout;
 
     lp_demo_init();
   </script>

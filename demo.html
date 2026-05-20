@@ -520,6 +520,13 @@
       demo_render();
     }
 
+    function demo_cancel_scout(matchId) {
+      if (simState.matches[matchId]) {
+        delete simState.matches[matchId];
+        demo_render();
+      }
+    }
+
     function demo_reset() {
       init_state();
       demo_render();
@@ -595,6 +602,7 @@
         if (m.status === MatchStatus.SCOUTED) {
           actionButtons = `
             <button class="btn btn-success" style="padding: 5px 10px; font-size: 0.75em;" onclick="window.demo_advance_match('${m.id}', '${MatchStatus.INTERVIEW_SET}')">面談確定</button>
+            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.75em; margin-left: 5px; border-color: #ddd; color: var(--text-sub);" onclick="window.demo_cancel_scout('${m.id}')">取り消し</button>
           `;
         } else if (m.status === MatchStatus.INTERVIEW_SET) {
           actionButtons = `
@@ -665,6 +673,7 @@
     window.demo_link_friend = demo_link_friend;
     window.demo_send_scout = demo_send_scout;
     window.demo_advance_match = demo_advance_match;
+    window.demo_cancel_scout = demo_cancel_scout;
     window.demo_reset = demo_reset;
 
     // --- Start ---
