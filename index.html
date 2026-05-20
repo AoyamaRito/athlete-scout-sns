@@ -5,20 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Athlete Scout SNS</title>
     <style>
-        body { font-family: sans-serif; background: #f0f2f5; margin: 0; padding: 20px; color: #1c1e21; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #1877f2; border-bottom: 2px solid #e4e6eb; padding-bottom: 10px; }
-        .section { margin-bottom: 30px; padding: 15px; border: 1px solid #e4e6eb; border-radius: 6px; }
-        .btn { background: #1877f2; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
-        .btn:hover { background: #166fe5; }
-        .btn-secondary { background: #e4e6eb; color: #050505; }
-        .btn-secondary:hover { background: #d8dadf; }
-        .user-card { border: 1px solid #ddd; padding: 10px; margin: 10px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
-        .friend-badge { background: #e7f3ff; color: #1877f2; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; }
-        .billing-log { font-family: monospace; background: #f8f9fa; padding: 10px; font-size: 0.9em; }
-        .tag-value { color: #d0021b; font-weight: bold; }
+        body { font-family: sans-serif; background: #fafafb; margin: 0; padding: 30px; color: #1f242d; line-height: 1.6; }
+        h1 { color: #1a237e; border-bottom: 1px solid #e2e5eb; padding-bottom: 15px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 30px; }
+        .section { background: white; margin-bottom: 30px; padding: 30px; border: 1px solid #e2e5eb; border-radius: 0; }
+        .btn { background: #1a237e; color: white; border: 1px solid #1a237e; padding: 10px 20px; border-radius: 2px; cursor: pointer; font-weight: bold; letter-spacing: 0.05em; transition: background-color 0.2s; }
+        .btn:hover { background: #121858; border-color: #121858; }
+        .btn-secondary { background: transparent; color: #1a237e; border: 1px solid #1a237e; }
+        .btn-secondary:hover { background: #f0f2f5; }
+        .user-card { border: 1px solid #e2e5eb; padding: 20px; margin: 15px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; background: #fafafb; }
+        .friend-badge { background: #eceef7; color: #1a237e; padding: 4px 10px; border-radius: 0; font-size: 0.8em; font-weight: bold; border: 1px solid #e2e5eb; }
+        .billing-log { font-family: monospace; background: #fafafb; padding: 20px; font-size: 0.9em; border: 1px solid #e2e5eb; }
+        .tag-value { color: #c0392b; font-weight: bold; font-family: monospace; }
     </style>
-</head>
 <body>
     <div class="container">
         <h1>体育会系学生スカウトSNS <span style="font-size: 0.5em; color: #65676b;">(Yume v2 プロトタイプ)</span></h1>
@@ -62,11 +60,6 @@
             if (res) update();
             return res;
         };
-
-        // Seed initial data for demo
-        dispatch({ type: 'USER_REGISTER', payload: { id: 'std:alice', role: 'role:student', name: 'Alice', sport: 'Soccer' } });
-        dispatch({ type: 'USER_REGISTER', payload: { id: 'std:bob', role: 'role:student', name: 'Bob', sport: 'Soccer' } });
-        dispatch({ type: 'USER_REGISTER', payload: { id: 'corp:mega', role: 'role:corp', name: 'MegaCorp' } });
     </script>
 </body>
 </html>

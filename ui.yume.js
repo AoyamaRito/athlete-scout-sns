@@ -77,9 +77,9 @@ export function render(container, state, dispatch) {
       const partnerId = m.studentIds.find(id => id !== currentUser.id);
       const partnerName = state.users[partnerId]?.profile.name;
       
-      return `<div class="user-card" style="${isPair ? 'border-left: 5px solid #1877f2;' : ''}">
+      return `<div class="user-card" style="${isPair ? 'border-left: 5px solid #1a237e;' : ''}">
         <div>
-          <span class="friend-badge" style="background: ${isPair ? '#e7f3ff' : '#f0f2f5'};">
+          <span class="friend-badge" style="background: ${isPair ? '#eceef7' : '#fafafb'};">
             ${isPair ? 'ペアスカウト' : '単体スカウト'}
           </span>
           <div style="margin-top: 5px;">
@@ -91,9 +91,9 @@ export function render(container, state, dispatch) {
         <div>
           ${m.status === MatchStatus.SCOUTED ? `
             <button class="btn" onclick="window.sns_dispatch({type:'SET_INTERVIEW', payload:{matchId:'${m.id}'}})">承諾する</button>
-            <button class="btn btn-secondary" style="margin-left: 5px;">辞退</button>
+            <button class="btn btn-secondary" style="margin-left: 5px;" onclick="window.sns_dispatch({type:'REJECT_SCOUT', payload:{matchId:'${m.id}'}})">辞退</button>
           ` : ''}
-          ${m.status === MatchStatus.INTERVIEW_SET ? '<span style="color: #1877f2; font-weight: bold;">面談進行中</span>' : ''}
+          ${m.status === MatchStatus.INTERVIEW_SET ? '<span style="color: #1a237e; font-weight: bold;">面談進行中</span>' : ''}
           ${m.status === MatchStatus.HIRED ? '<span style="color: green; font-weight: bold;">採用確定！</span>' : ''}
         </div>
       </div>`;
@@ -162,7 +162,7 @@ function renderAuth(container, state, dispatch) {
     </div>
     
     <div style="margin-top: 40px; border-top: 1px solid #e4e6eb; padding-top: 20px;">
-      <a href="#" style="color: #1877f2; font-size: 0.85em; text-decoration: none;" onclick="window.sns_start_registration(); return false;">新しく学生アカウントを作る（鍵発行）</a>
+      <a href="#" style="color: #1a237e; font-size: 0.85em; text-decoration: none;" onclick="window.sns_start_registration(); return false;">新しく学生アカウントを作る（鍵発行）</a>
     </div>
     
     <div id="qr-display" style="margin-top: 20px;"></div>
@@ -172,7 +172,7 @@ function renderAuth(container, state, dispatch) {
     const { recoveryKey, publicId, identity } = await createNewUserIdentity();
     const qrEl = document.getElementById('qr-display');
     qrEl.innerHTML = `
-    <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 1px solid #1877f2; margin-top: 20px;">
+    <div style="background: #fafafb; padding: 20px; border-radius: 0; border: 1px solid #1a237e; margin-top: 20px;">
       <p style="color: #050505; font-weight: bold;">学生用パスポートが発行されました！</p>
       <p style="font-size: 0.9em; color: #65676b;">この鍵画像を保存してください。これがあなたの「ログイン証」になります。</p>
       <div id="qrcode" style="margin: 20px 0;"></div>

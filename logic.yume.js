@@ -16,10 +16,76 @@ export const __block = {
 // === HEAD ===
 
 const initialState = {
-  users: {}, // { id: { id, role, profile: { name, sport, friends: [] } } }
-  matches: {}, // { id: { id, corpId, studentIds: [], status, interviewType, createdAt } }
-  billing: [], // { id, matchId, amount, type, timestamp }
-  REAL_auth: null // { publicId, identity }
+  users: {
+    'std:alice': {
+      id: 'std:alice',
+      role: Roles.STUDENT,
+      profile: {
+        name: '清水 美咲',
+        sport: 'サッカー部 (FW)',
+        position: 'フォワード / 主将',
+        achievements: '全国高校選手権ベスト8、都リーグ得点王',
+        selfPR: 'チームを牽引するリーダーシップと、決定機を逃さない決定力が強みです。親友の木村とは中高大10年間同じピッチで戦い、阿吽の呼吸でパスを通せます。',
+        friends: ['std:bob']
+      }
+    },
+    'std:bob': {
+      id: 'std:bob',
+      role: Roles.STUDENT,
+      profile: {
+        name: '木村 拓海',
+        sport: 'サッカー部 (MF)',
+        position: 'ミッドフィルダー / 司令塔',
+        achievements: '関東大学2部リーグ アシスト王',
+        selfPR: '広い視野から繰り出す正確なパスと、ゲームを支配する戦術眼が武器です。清水とは長年お互いの視線だけでゴールを演出できる関係です。',
+        friends: ['std:alice']
+      }
+    },
+    'std:charlie': {
+      id: 'std:charlie',
+      role: Roles.STUDENT,
+      profile: {
+        name: '佐藤 大翔',
+        sport: '野球部 (投手)',
+        position: 'エースピッチャー',
+        achievements: '東京六大学リーグ 最優秀防御率',
+        selfPR: '最速148kmのストレートとキレのあるスライダーが武器です。チームの勝利のために、マウンド上では常に冷静さを失いません。',
+        friends: []
+      }
+    },
+    'std:dave': {
+      id: 'std:dave',
+      role: Roles.STUDENT,
+      profile: {
+        name: '鈴木 翔太',
+        sport: '野球部 (捕手)',
+        position: '正捕手 / 副主将',
+        achievements: '春季リーグ ベストナイン',
+        selfPR: '投手の長所を引き出すインサイドワークと二塁送球1.9秒の強肩が売りです。佐藤とはバッテリーとして絶対の信頼関係があります。',
+        friends: ['std:charlie']
+      }
+    },
+    'corp:demo': {
+      id: 'corp:demo',
+      role: Roles.CORPORATION,
+      profile: {
+        name: '株式会社スポーツリーディング',
+        sport: 'スポーツ採用・マーケティング'
+      }
+    }
+  },
+  matches: {
+    'match:corp:demo:std:alice-std:bob': {
+      id: 'match:corp:demo:std:alice-std:bob',
+      corpId: 'corp:demo',
+      studentIds: ['std:alice', 'std:bob'],
+      status: MatchStatus.SCOUTED,
+      interviewType: 'タイプ:ペア',
+      createdAt: Date.now()
+    }
+  },
+  billing: [],
+  REAL_auth: null
 };
 
 /**
