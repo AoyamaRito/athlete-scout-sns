@@ -216,7 +216,6 @@ function renderAuth(container, state, dispatch) {
     reader.readAsDataURL(file);
     input.value = ''; // Reset for next selection
   };
-  }
   window.sns_dispatch = dispatch;
   container.innerHTML = html;
 }
