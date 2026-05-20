@@ -5,17 +5,294 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Athlete Scout SNS</title>
     <style>
-        body { font-family: sans-serif; background: #fafafb; margin: 0; padding: 30px; color: #1f242d; line-height: 1.6; }
-        h1 { color: #1a237e; border-bottom: 1px solid #e2e5eb; padding-bottom: 15px; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 30px; }
-        .section { background: white; margin-bottom: 30px; padding: 30px; border: 1px solid #e2e5eb; border-radius: 0; }
-        .btn { background: #1a237e; color: white; border: 1px solid #1a237e; padding: 10px 20px; border-radius: 2px; cursor: pointer; font-weight: bold; letter-spacing: 0.05em; transition: background-color 0.2s; }
-        .btn:hover { background: #121858; border-color: #121858; }
-        .btn-secondary { background: transparent; color: #1a237e; border: 1px solid #1a237e; }
-        .btn-secondary:hover { background: #f0f2f5; }
-        .user-card { border: 1px solid #e2e5eb; padding: 20px; margin: 15px 0; border-radius: 0; display: flex; justify-content: space-between; align-items: center; background: #fafafb; }
-        .friend-badge { background: #eceef7; color: #1a237e; padding: 4px 10px; border-radius: 0; font-size: 0.8em; font-weight: bold; border: 1px solid #e2e5eb; }
-        .billing-log { font-family: monospace; background: #fafafb; padding: 20px; font-size: 0.9em; border: 1px solid #e2e5eb; }
-        .tag-value { color: #c0392b; font-weight: bold; font-family: monospace; }
+        :root {
+            --primary-color: #1a237e;
+            --primary-hover: #121858;
+            --bg-color: #fafafb;
+            --card-bg: #ffffff;
+            --text-main: #1f242d;
+            --text-sub: #65676b;
+            --border-color: #e2e5eb;
+            --accent-color: #bfa37a;
+            --success-color: #2e7d32;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 15px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            margin-bottom: 24px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+
+        h1 span {
+            display: block;
+            margin-top: 4px;
+            font-size: 0.6em;
+            font-weight: normal;
+        }
+
+        .section {
+            background: var(--card-bg);
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+        }
+
+        .section h3, .section h4 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 8px;
+        }
+
+        /* Forms */
+        .input-field {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 0.95em;
+            background: #fff;
+            color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.08);
+        }
+
+        /* Buttons */
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: 1px solid var(--primary-color);
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95em;
+            letter-spacing: 0.03em;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 44px;
+            width: 100%;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: #f0f2f5;
+        }
+
+        /* User Cards & Lists */
+        .user-card {
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            margin: 12px 0;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #fafafb;
+            transition: box-shadow 0.2s;
+        }
+
+        .user-card:hover {
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .user-card-actions {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .user-card-actions .btn {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            min-height: 38px;
+            width: auto;
+        }
+
+        .friend-badge {
+            background: #eceef7;
+            color: var(--primary-color);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            font-weight: bold;
+            border: 1px solid var(--border-color);
+            display: inline-block;
+        }
+
+        .billing-log {
+            font-family: monospace;
+            background: #fafafb;
+            padding: 15px;
+            font-size: 0.85em;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .tag-value {
+            color: #c0392b;
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        #qrcode img {
+            max-width: 100%;
+            height: auto;
+            margin: 0 auto;
+        }
+
+        /* Top Header */
+        .mypage-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .mypage-header h2 {
+            font-size: 1.3em;
+            color: var(--primary-color);
+        }
+
+        .mypage-header-right {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 10px;
+        }
+
+        .mypage-header-right span {
+            font-size: 0.8em;
+            color: var(--text-sub);
+        }
+
+        .mypage-header-right .btn {
+            width: auto;
+            padding: 6px 12px;
+            font-size: 0.8em;
+            min-height: 32px;
+        }
+
+        /* Simulators */
+        .simulator-section {
+            background: #fff9e6;
+            border-color: #ffe58f;
+        }
+
+        .simulator-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .simulator-actions .btn {
+            width: 100%;
+        }
+
+        /* Media Queries for Desktop layout scaling */
+        @media (min-width: 600px) {
+            body {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                text-align: left;
+            }
+
+            h1 span {
+                display: inline;
+                margin-left: 10px;
+                font-size: 0.55em;
+            }
+
+            .btn {
+                width: auto;
+            }
+
+            .user-card {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .user-card-actions {
+                width: auto;
+            }
+
+            .mypage-header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .mypage-header-right {
+                width: auto;
+                justify-content: flex-end;
+            }
+
+            .simulator-actions {
+                flex-direction: row;
+            }
+
+            .simulator-actions .btn {
+                width: auto;
+            }
+        }
     </style>
 <body>
     <div class="container">

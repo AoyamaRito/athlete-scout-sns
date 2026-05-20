@@ -31,6 +31,19 @@ export const __block = {
       "tags": [],
       "applyId": "apply-2026-05-20-67ffc6b7",
       "v": 2
+    },
+    {
+      "content": "\nimport idAuth from './vendor/id-auth.js';\n\n/**\n * Generate a new QR-based identity for a user.\n * Returns the recovery key string to be encoded in QR.\n */\nexport async function createNewUserIdentity() {\n  const identity = await idAuth.generateIdentity();\n  const recoveryKey = idAuth.encodeRecoveryKey(identity.ed25519Seed, identity.ed25519PublicRaw);\n  return {\n    recoveryKey: recoveryKey.full,\n    publicId: idAuth.bytesToHex(identity.ed25519PublicRaw),\n    identity\n  };\n}\n\n/**\n * Authenticate using a recovery key string (e.g., from a QR scan or file).\n */\nexport async function authenticateWithKey(keyString) {\n  try {\n    const { ed25519Seed, ed25519PublicRaw } = idAuth.decodeRecoveryKey(keyString);\n    const identity = await idAuth.restoreIdentityFromSeed(ed25519Seed, ed25519PublicRaw);\n    return {\n      success: true,\n      publicId: idAuth.bytesToHex(identity.ed25519PublicRaw),\n      identity\n    };\n  } catch (e) {\n    console.error('Auth failed:', e);\n    return { success: false, error: e.message };\n  }\n}\n",
+      "ts": 1779252135941,
+      "refs": [
+        {
+          "kind": "import",
+          "target": "./vendor/id-auth.js"
+        }
+      ],
+      "tags": [],
+      "applyId": "apply-2026-05-20-9053cf63",
+      "v": 3
     }
   ],
   "notes": {
@@ -41,11 +54,21 @@ export const __block = {
         "ts": 1779249724183,
         "text": "Initial bootstrap"
       }
+    ],
+    "apply:apply-2026-05-20-9053cf63": [
+      {
+        "id": "n-30b5abf7-3668-4206-8bc1-9050cdf29807",
+        "author": "human",
+        "ts": 1779252135943,
+        "text": "Safeguard imports inside HEAD"
+      }
     ]
   }
 };
 
 // === HEAD ===
+
+import idAuth from './vendor/id-auth.js';
 
 /**
  * Generate a new QR-based identity for a user.
