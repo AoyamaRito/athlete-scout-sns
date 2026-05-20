@@ -4,7 +4,7 @@
  * @tags: auth, qr, crypto
  */
 
-import idAuth from '../qr-auth/id-auth.js';
+import idAuth from './vendor/id-auth.js';
 
 export const __block = {
   id: 'sns:auth',
