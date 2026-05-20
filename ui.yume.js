@@ -184,19 +184,39 @@ function renderAuth(container, state, dispatch) {
   };
 
   window.sns_handle_qr_file = async (input) => {
-    // Note: Since we don't have a real QR scanner here, we'll prompt for the string
-    // In a real app, this would use a JS QR reader library on the uploaded image.
-    const key = prompt("QR画像をスキャンした内容（鍵文字列）を入力してください:");
-    if (key) {
-      const result = await authenticateWithKey(key);
-      if (result.success) {
-        dispatch({ type: 'SET_AUTH', payload: { publicId: result.publicId, identity: result.identity } });
-      } else {
-        alert("認証に失敗しました: " + result.error);
-      }
-    }
-  };
+    const file = input.files[0];
+    if (!file) return;
 
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const img = new Image();
+      img.onload = async () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+        if (code) {
+          const result = await authenticateWithKey(code.data);
+          if (result.success) {
+            dispatch({ type: 'SET_AUTH', payload: { publicId: result.publicId, identity: result.identity } });
+          } else {
+            alert("認証に失敗しました: " + result.error);
+          }
+        } else {
+          alert("画像からQRコードを検出できませんでした。別の画像をお試しください。");
+        }
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    input.value = ''; // Reset for next selection
+  };
+  }
   window.sns_dispatch = dispatch;
   container.innerHTML = html;
 }
