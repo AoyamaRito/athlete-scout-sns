@@ -92,8 +92,18 @@ test('E2E Full Flow: Register, Pair Scout, Funnel Progress, Billing, Exceptions'
   assert.strictEqual(interviewBill.amount, 'jpy:15000', 'Pair interview fee should be domain-tagged jpy:15000');
 
   // 5. CHAT MESSAGING DURING INTERVIEW
+  // Attempt sending message BEFORE paying the bill (must be blocked)
+  const prePayMsg = dispatch({ type: 'SEND_MESSAGE', payload: { matchId: matchPairId, senderId: 'std:1', text: 'お支払い前のテスト' } });
+  assert.strictEqual(prePayMsg, false, 'Should decline messages sent before bill is paid');
+
+  // Pay the bill
+  const payRes = dispatch({ type: 'PAY_BILL', payload: { billId: interviewBill.id } });
+  assert.strictEqual(payRes, true, 'PAY_BILL should succeed');
+  assert.strictEqual(store.REAL_state.billing[0].status, 'PAID', 'Bill status should be PAID');
+
+  // SEND_MESSAGE after paying the bill (must succeed)
   const msgRes = dispatch({ type: 'SEND_MESSAGE', payload: { matchId: matchPairId, senderId: 'std:1', text: '初めまして！よろしくお願いします！' } });
-  assert.strictEqual(msgRes, true, 'Student should be allowed to send message during interview');
+  assert.strictEqual(msgRes, true, 'Student should be allowed to send message after payment is completed');
   assert.strictEqual(store.REAL_state.messages.length, 1, 'Message list should contain 1 message');
   assert.strictEqual(store.REAL_state.messages[0].text, '初めまして！よろしくお願いします！');
 
