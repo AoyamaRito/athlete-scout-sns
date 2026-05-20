@@ -21,32 +21,43 @@ export const __block = {
 // === HEAD ===
 
 export const Roles = {
-  STUDENT: 'role:student',
-  CORPORATION: 'role:corp',
-  ADMIN: 'role:admin'
+  STUDENT: 'ロール:学生',
+  CORPORATION: 'ロール:企業',
+  ADMIN: 'ロール:管理者'
 };
 
 export const MatchStatus = {
-  IDLE: 'status:idle',
-  SCOUTED: 'status:scouted',
-  INTERVIEW_SET: 'status:interview_set',
-  HIRED: 'status:hired',
-  REJECTED: 'status:rejected'
+  IDLE: '状態:未接触',
+  SCOUTED: '状態:スカウト済み',
+  INTERVIEW_SET: '状態:面談設定済み',
+  HIRED: '状態:採用確定',
+  REJECTED: '状態:辞退・お見送り'
 };
 
 export const InterviewType = {
-  SINGLE: 'type:single',
-  PAIR: 'type:pair'
+  SINGLE: 'タイプ:単体',
+  PAIR: 'タイプ:ペア'
 };
 
 /**
- * Charging Rules (Monetization)
+ * 課金ルール (収益ポイント)
  */
 export const Fees = {
   SINGLE_INTERVIEW: 'jpy:10000',
-  PAIR_INTERVIEW:   'jpy:15000', // Discounted compared to 2x single
+  PAIR_INTERVIEW:   'jpy:15000', // 2人分を単体で受けるよりお得
   SINGLE_HIRE:      'jpy:200000',
-  PAIR_HIRE:        'jpy:350000' // Discounted
+  PAIR_HIRE:        'jpy:350000' // 2人セットでの採用ボーナス
+};
+
+/**
+ * QR認証仕様
+ * - 初回登録時に「秘密鍵」をQR画像として発行。
+ * - 以降、その画像を読み込むことで認証（ログイン）を行う。
+ * - サーバー鍵との照合により、なりすましを防止。
+ */
+export const AuthSpec = {
+  QR_VERSION: 'IDAUTH-V2',
+  ALGO: 'Ed25519 + HMAC-SHA256'
 };
 
 /**

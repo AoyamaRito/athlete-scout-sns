@@ -21,18 +21,19 @@
 </head>
 <body>
     <div class="container">
-        <h1>Student Athlete Scout SNS <span style="font-size: 0.5em; color: #65676b;">(Yume v2 Prototype)</span></h1>
+        <h1>体育会系学生スカウトSNS <span style="font-size: 0.5em; color: #65676b;">(Yume v2 プロトタイプ)</span></h1>
         
         <div id="app">
-            <!-- UI will be rendered here -->
+            <!-- UI はここにレンダリングされます -->
         </div>
 
         <div class="section">
-            <h3>Billing History (Admin View)</h3>
+            <h3>請求履歴（管理者用）</h3>
             <div id="billing-view" class="billing-log"></div>
         </div>
     </div>
 
+    <script src="vendor/qrcode.min.js"></script>
     <script type="module">
         import { store, dispatch } from './logic.yume.js';
         import { render } from './ui.yume.js';

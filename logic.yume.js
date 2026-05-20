@@ -18,7 +18,8 @@ export const __block = {
 const initialState = {
   users: {}, // { id: { id, role, profile: { name, sport, friends: [] } } }
   matches: {}, // { id: { id, corpId, studentIds: [], status, interviewType, createdAt } }
-  billing: [] // { id, matchId, amount, type, timestamp }
+  billing: [], // { id, matchId, amount, type, timestamp }
+  REAL_auth: null // { publicId, identity }
 };
 
 /**
@@ -65,7 +66,7 @@ export function snsReducer(state, event) {
         corpId: payload.corpId,
         studentIds: payload.studentIds,
         status: MatchStatus.SCOUTED,
-        interviewType: payload.studentIds.length > 1 ? 'type:pair' : 'type:single',
+        interviewType: payload.studentIds.length > 1 ? 'タイプ:ペア' : 'タイプ:単体',
         createdAt: Date.now()
       };
       break;
@@ -75,12 +76,12 @@ export function snsReducer(state, event) {
       const match = matches[payload.matchId];
       if (match) {
         match.status = MatchStatus.INTERVIEW_SET;
-        const fee = match.interviewType === 'type:pair' ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW;
+        const fee = match.interviewType === 'タイプ:ペア' ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW;
         billing.push({
           id: `bill:${Date.now()}`,
           matchId: match.id,
           amount: fee,
-          type: 'fee:interview'
+          type: '手数料:面談'
         });
       }
       break;
@@ -90,15 +91,19 @@ export function snsReducer(state, event) {
       const match = matches[payload.matchId];
       if (match) {
         match.status = MatchStatus.HIRED;
-        const fee = match.interviewType === 'type:pair' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE;
+        const fee = match.interviewType === 'タイプ:ペア' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE;
         billing.push({
           id: `bill:${Date.now()}`,
           matchId: match.id,
           amount: fee,
-          type: 'fee:hire'
+          type: '手数料:採用'
         });
       }
       break;
+    }
+
+    case 'SET_AUTH': {
+      return { ...state, REAL_auth: payload };
     }
   }
 
