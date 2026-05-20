@@ -114,18 +114,17 @@ export function render(container, state, dispatch) {
 }
 
 function renderAuth(container, state, dispatch) {
-  let html = `<div class="section" style="text-align: center;">
-    <h2>ログイン / 新規登録</h2>
-    <p>QR鍵（秘密鍵）を使用して認証します。</p>
+  let html = `<div class="section" style="text-align: center; padding: 40px 20px;">
+    <h2 style="margin-bottom: 30px;">ログイン</h2>
     
-    <div style="margin-bottom: 20px;">
-      <button class="btn" onclick="window.sns_start_registration()">新しく鍵を発行する</button>
+    <div style="margin-bottom: 30px;">
+      <p style="color: #65676b; margin-bottom: 20px;">QR鍵（秘密鍵）を選択して認証してください</p>
+      <input type="file" id="qr-input" style="display: none;" onchange="window.sns_handle_qr_file(this)">
+      <button class="btn" style="padding: 12px 24px; font-size: 1.1em;" onclick="document.getElementById('qr-input').click()">QR画像(鍵)を選択してログイン</button>
     </div>
     
-    <div style="border-top: 1px solid #ddd; padding-top: 20px;">
-      <p>鍵ファイルを読み込む:</p>
-      <input type="file" id="qr-input" style="display: none;" onchange="window.sns_handle_qr_file(this)">
-      <button class="btn btn-secondary" onclick="document.getElementById('qr-input').click()">QR画像(鍵)を選択</button>
+    <div style="margin-top: 40px; border-top: 1px solid #e4e6eb; pt: 20px;">
+      <a href="#" style="color: #1877f2; font-size: 0.85em; text-decoration: none;" onclick="window.sns_start_registration(); return false;">鍵をお持ちでない方はこちら（新規発行）</a>
     </div>
     
     <div id="qr-display" style="margin-top: 20px;"></div>
@@ -134,10 +133,16 @@ function renderAuth(container, state, dispatch) {
   window.sns_start_registration = async () => {
     const { recoveryKey, publicId, identity } = await createNewUserIdentity();
     const qrEl = document.getElementById('qr-display');
-    qrEl.innerHTML = `<p><strong>新しい鍵が発行されました！</strong><br>この画像を保存して大切に保管してください。</p>
-    <div id="qrcode"></div>
-    <p style="font-size: 0.8em; word-break: break-all;">鍵文字列: <code>${recoveryKey}</code></p>
-    <button class="btn" onclick="window.sns_dispatch({type:'SET_AUTH', payload:{publicId:'${publicId}', identity:${JSON.stringify(identity)}}})">この鍵でログイン</button>`;
+    qrEl.innerHTML = `
+    <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 1px solid #1877f2; margin-top: 20px;">
+      <p style="color: #050505; font-weight: bold;">新しい鍵が発行されました！</p>
+      <p style="font-size: 0.9em; color: #65676b;">この画像を保存して、大切に保管してください。<br>次回からこの画像でログインできます。</p>
+      <div id="qrcode" style="margin: 20px 0;"></div>
+      <p style="font-size: 0.7em; word-break: break-all; color: #8a8d91; background: #fff; padding: 10px; border-radius: 4px;">鍵文字列: ${recoveryKey}</p>
+      <div style="margin-top: 20px;">
+        <button class="btn" onclick="location.reload()">ログイン画面に戻る</button>
+      </div>
+    </div>`;
     
     // Generate QR using vendor library
     const typeNumber = 0;
