@@ -50,15 +50,16 @@ export const Fees = {
 };
 
 /**
- * 学生プロフィールの詳細定義
+ * 学生プロフィールの詳細定義 (最低ライン要件)
  */
 export const StudentProfileSpec = {
   fields: {
-    name: '氏名',
+    nickname: 'ニックネーム',
     sport: '競技種目',
     position: 'ポジション・役割',
-    achievements: '競技実績（大会結果など）',
-    selfPR: '自己PR',
+    facePhoto: '個人写真（顔写真 / プレー中の写真）',
+    teamPhoto: '部活動の集合写真（親友連動用）',
+    selfIntroduction: '自己紹介（フリーワード）',
     bestFriendId: '親友ID（ペアスカウト用）'
   }
 };

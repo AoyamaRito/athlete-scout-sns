@@ -241,11 +241,10 @@ const initialState = {
       id: 'std:alice',
       role: Roles.STUDENT,
       profile: {
-        name: '清水 美咲',
+        nickname: '美咲 (みさ)',
         sport: 'サッカー部 (FW)',
         position: 'フォワード / 主将',
-        achievements: '全国高校選手権ベスト8、都リーグ得点王',
-        selfPR: 'チームを牽引するリーダーシップと、決定機を逃さない決定力が強みです。親友の木村とは中高大10年間同じピッチで戦い、阿吽の呼吸でパスを通せます。',
+        selfIntroduction: '全国高校選手権ベスト8、都リーグ得点王。チームを牽引するリーダーシップと決定力が強みです！親友の拓海とは中高大10年間同じピッチで戦い、阿吽の呼吸でパスを通せます。',
         friends: ['std:bob']
       }
     },
@@ -253,11 +252,10 @@ const initialState = {
       id: 'std:bob',
       role: Roles.STUDENT,
       profile: {
-        name: '木村 拓海',
+        nickname: '拓海 (たく)',
         sport: 'サッカー部 (MF)',
         position: 'ミッドフィルダー / 司令塔',
-        achievements: '関東大学2部リーグ アシスト王',
-        selfPR: '広い視野から繰り出す正確なパスと、ゲームを支配する戦術眼が武器です。清水とは長年お互いの視線だけでゴールを演出できる関係です。',
+        selfIntroduction: '関東大学2部リーグ アシスト王。広い視野から繰り出す正確なパスと、ゲームを支配する戦術眼が武器です。美咲とは長年お互いの視線だけでゴールを演出できる関係です。',
         friends: ['std:alice']
       }
     },
@@ -265,11 +263,10 @@ const initialState = {
       id: 'std:charlie',
       role: Roles.STUDENT,
       profile: {
-        name: '佐藤 大翔',
+        nickname: '陸 (りく)',
         sport: '野球部 (投手)',
         position: 'エースピッチャー',
-        achievements: '東京六大学リーグ 最優秀防御率',
-        selfPR: '最速148kmのストレートとキレのあるスライダーが武器です。チームの勝利のために、マウンド上では常に冷静さを失いません。',
+        selfIntroduction: '東京六大学リーグ 最優秀防御率。最速148kmのストレートとキレのあるスライダーが武器です。チームの勝利のために、マウンド上では常に冷静さを失いません。',
         friends: []
       }
     },
@@ -277,11 +274,10 @@ const initialState = {
       id: 'std:dave',
       role: Roles.STUDENT,
       profile: {
-        name: '鈴木 翔太',
+        nickname: '翔太 (しょう)',
         sport: '野球部 (捕手)',
         position: '正捕手 / 副主将',
-        achievements: '春季リーグ ベストナイン',
-        selfPR: '投手の長所を引き出すインサイドワークと二塁送球1.9秒の強肩が売りです。佐藤とはバッテリーとして絶対の信頼関係があります。',
+        selfIntroduction: '春季リーグ ベストナイン。投手の長所を引き出すインサイドワークと二塁送球1.9秒の強肩が売りです。陸とはバッテリーとして絶対の信頼関係があります。',
         friends: ['std:charlie']
       }
     },
@@ -325,11 +321,11 @@ export function snsReducer(state, event) {
         id: payload.id,
         role: payload.role,
         profile: { 
-          name: payload.name, 
+          nickname: payload.nickname || payload.name || '新規ユーザー', 
+          name: payload.name || payload.nickname || '新規ユーザー',
           sport: payload.sport || '',
           position: payload.position || '',
-          achievements: payload.achievements || '',
-          selfPR: payload.selfPR || '',
+          selfIntroduction: payload.selfIntroduction || payload.selfPR || payload.achievements || '',
           friends: [] 
         }
       };
@@ -461,7 +457,8 @@ export function snsValidator(state, event) {
   if (!payload) return false;
 
   if (type === 'USER_REGISTER') {
-    if (!payload.id || !payload.role || !payload.name) return false;
+    if (!payload.id || !payload.role) return false;
+    if (!payload.nickname && !payload.name) return false;
   }
 
   if (type === 'SEND_MESSAGE') {
