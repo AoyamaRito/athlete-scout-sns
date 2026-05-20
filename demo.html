@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athlete Scout - Interactive Demo Showcase</title>
+  <style>
+    :root {
+      --primary-color: #1a237e; /* Rich Deep Blue RGB(26, 35, 126) */
+      --primary-hover: #121858;
+      --accent-color: #bfa37a; /* Antique Champagne Gold */
+      --accent-hover: #a3875e;
+      --bg-color: #fafafb;
+      --card-bg: #ffffff;
+      --text-main: #1f242d;
+      --text-sub: #717a8a;
+      --border-color: #e2e5eb;
+      --success-color: #2e7d32;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text-main);
+      background-color: var(--bg-color);
+      line-height: 1.6;
+      letter-spacing: 0.03em;
+    }
+
+    header {
+      background-color: var(--card-bg);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.3em;
+      font-weight: 700;
+      color: var(--primary-color);
+      letter-spacing: 0.05em;
+    }
+
+    .logo-badge {
+      background-color: var(--accent-color);
+      color: white;
+      font-size: 0.55em;
+      padding: 4px 8px;
+      border-radius: 2px;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      margin-left: 10px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px;
+    }
+
+    .intro-banner {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 30px;
+      margin-bottom: 30px;
+      text-align: center;
+      border-radius: 0;
+    }
+
+    .intro-banner h2 {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .intro-banner p {
+      font-size: 1em;
+      opacity: 0.85;
+      font-weight: 300;
+    }
+
+    /* 3-Column Layout */
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+
+    @media (min-width: 1000px) {
+      .showcase-grid {
+        grid-template-columns: 1.2fr 1.2fr 1fr;
+      }
+    }
+
+    .column {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 25px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .column-title {
+      font-size: 1.2em;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--accent-color);
+      letter-spacing: 0.02em;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .column-subtitle {
+      font-size: 0.8em;
+      color: var(--text-sub);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-block;
+      background-color: var(--primary-color);
+      color: white;
+      padding: 10px 18px;
+      font-size: 0.85em;
+      font-weight: 600;
+      border: 1px solid var(--primary-color);
+      border-radius: 2px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.2s, border-color 0.2s;
+      text-align: center;
+      letter-spacing: 0.05em;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background-color: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: #f0f2f5;
+    }
+
+    .btn-accent {
+      background-color: var(--accent-color);
+      border-color: var(--accent-color);
+    }
+
+    .btn-accent:hover {
+      background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success-color);
+      border-color: var(--success-color);
+    }
+
+    .btn-success:hover {
+      background-color: #215c25;
+      border-color: #215c25;
+    }
+
+    /* Student Card */
+    .student-card {
+      background-color: #fafafb;
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .student-name {
+      font-size: 1.05em;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .student-sport {
+      font-size: 0.85em;
+      color: var(--text-sub);
+      margin-top: 2px;
+    }
+
+    .student-desc {
+      font-size: 0.8em;
+      color: var(--text-sub);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .badge {
+      font-size: 0.7em;
+      padding: 3px 8px;
+      font-weight: bold;
+      display: inline-block;
+      letter-spacing: 0.05em;
+      margin-top: 8px;
+    }
+
+    .badge-primary {
+      background-color: #f0f2f5;
+      color: var(--primary-color);
+      border: 1px solid var(--border-color);
+    }
+
+    .badge-accent {
+      background-color: #fbf5eb;
+      color: #8c6d3f;
+      border: 1px solid #e8dbca;
+    }
+
+    .card-actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Match Row inside Funnel */
+    .match-row {
+      background-color: #fafafb;
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--primary-color);
+      padding: 15px;
+      margin-bottom: 15px;
+      font-size: 0.9em;
+    }
+
+    .match-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .match-names {
+      font-weight: 700;
+    }
+
+    .match-status-badge {
+      font-size: 0.75em;
+      font-weight: bold;
+      color: var(--text-sub);
+    }
+
+    /* Billing styles */
+    .billing-row {
+      background-color: #fafafb;
+      border: 1px solid var(--border-color);
+      padding: 12px;
+      margin-bottom: 10px;
+      font-size: 0.85em;
+      font-family: monospace;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .total-box {
+      border-top: 1px solid var(--border-color);
+      padding-top: 15px;
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .total-amount {
+      font-size: 1.8em;
+      font-weight: 700;
+      font-family: monospace;
+      color: #c0392b;
+    }
+
+    footer {
+      background-color: #ffffff;
+      border-top: 1px solid var(--border-color);
+      padding: 40px 20px;
+      text-align: center;
+      font-size: 0.85em;
+      color: var(--text-sub);
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-container">
+      <div class="logo">
+        Athlete Scout <span class="logo-badge">Interactive Demo</span>
+      </div>
+      <div>
+        <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 0.8em;" onclick="window.demo_reset()">デモを初期化</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    
+    <!-- Intro Banner -->
+    <div class="intro-banner">
+      <h2>ログイン不要・対話型シミュレーションダッシュボード</h2>
+      <p>
+        学生の「親友リンク結成」から、企業の「単体・ペアスカウト」、選考、そして「jpy:」課金連動まで。<br>
+        ボタンをポチポチ押すだけで、システム全体の挙動と価値が1画面で瞬時に理解できます。
+      </p>
+    </div>
+
+    <!-- 3-Column Interface -->
+    <div class="showcase-grid">
+
+      <!-- Column 1: Student DB -->
+      <div class="column">
+        <div class="column-title">
+          <span>アスリート学生DB</span>
+          <span style="font-size: 0.6em; color: var(--text-sub); font-weight: normal;">シミュレータ</span>
+        </div>
+        <div class="column-subtitle">
+          お互いをお気に入りにしている清水と木村は「ペアスカウト可能」です。佐藤のカードで鈴木を親友に登録すると、新たに「佐藤・鈴木ペア」が結成されます。
+        </div>
+        
+        <div id="student-db-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Column 2: Selection Funnel -->
+      <div class="column">
+        <div class="column-title">
+          <span>選考ファンネル</span>
+          <span style="font-size: 0.6em; color: var(--text-sub); font-weight: normal;">ステータス管理</span>
+        </div>
+        <div class="column-subtitle">
+          送信されたスカウトがここに並びます。「面談確定」「採用確定（内定）」と進むにつれ、右側の料金メーターに利用料が連動加算されます。
+        </div>
+
+        <div id="selection-funnel-list">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Column 3: Billing Meter -->
+      <div class="column">
+        <div class="column-title">
+          <span>発生料金メーター</span>
+          <span style="font-size: 0.6em; color: var(--text-sub); font-weight: normal;">REAL_billing</span>
+        </div>
+        <div class="column-subtitle">
+          面談設定時、および採用確定時に発生する手数料です。すべてのデータは「jpy:金額」のDomain-Tagged Value形式で文字化処理されています。
+        </div>
+
+        <div id="billing-summary" style="flex-grow: 1;">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 Athlete Scout SNS (Interactive Showcase) All Rights Reserved.</p>
+    <p style="font-size: 0.8em; margin-top: 10px; opacity: 0.7; line-height: 1.7;">
+      本プラットフォームは yume-develop 公理 A0〜A14（万物文字化、Domain-Tagged、ローカリティ極大）に完全準拠してガバナンスされています。
+    </p>
+  </footer>
+
+  <!-- Scripts: Interactive Simulation Core -->
+  <script>
+    // --- Sim State ---
+    const MatchStatus = {
+      SCOUTED: '状態:スカウト済み',
+      INTERVIEW_SET: '状態:面談設定済み',
+      HIRED: '状態:採用確定'
+    };
+
+    const Fees = {
+      SINGLE_INTERVIEW: 10000,
+      PAIR_INTERVIEW: 15000,
+      SINGLE_HIRE: 200000,
+      PAIR_HIRE: 350000
+    };
+
+    let simState = {};
+
+    function init_state() {
+      simState = {
+        users: {
+          'std:alice': {
+            id: 'std:alice',
+            name: '清水 美咲',
+            sport: 'サッカー部 (FW)',
+            desc: 'チームを牽引する主将。全国選手権ベスト8。親友の木村とは視線だけでパスを通せます。',
+            friends: ['std:bob']
+          },
+          'std:bob': {
+            id: 'std:bob',
+            name: '木村 拓海',
+            sport: 'サッカー部 (MF)',
+            desc: 'ゲームを支配する司令塔。アシスト王。清水のプレースタイルを知り尽くしています。',
+            friends: ['std:alice']
+          },
+          'std:charlie': {
+            id: 'std:charlie',
+            name: '佐藤 大翔',
+            sport: '野球部 (投手)',
+            desc: '最速148kmの本格派エース。鈴木とは高校・大学で長年バッテリーを組んできました。',
+            friends: [] // Unlinked initially to Bob
+          },
+          'std:dave': {
+            id: 'std:dave',
+            name: '鈴木 翔太',
+            sport: '野球部 (捕手)',
+            desc: '強肩正捕手にして副主将。佐藤のボールのキレを100%引き出す捕球技術が武器。',
+            friends: ['std:charlie'] // Loves Charlie (one-sided initially)
+          }
+        },
+        matches: {
+          'match:corp:清水 & 木村': {
+            id: 'match:corp:清水 & 木村',
+            studentIds: ['std:alice', 'std:bob'],
+            status: MatchStatus.SCOUTED,
+            interviewType: 'タイプ:ペア',
+            names: '清水 美咲 & 木村 拓海'
+          }
+        },
+        billing: []
+      };
+    }
+
+    function formatJPY(amount) {
+      return "jpy:" + amount;
+    }
+
+    // --- Actions ---
+    function demo_link_friend() {
+      // Satou (charlie) links Suzuki (dave) -> Mutual friendship!
+      simState.users['std:charlie'].friends.push('std:dave');
+      demo_render();
+    }
+
+    function demo_send_scout(studentIds, isPair) {
+      const names = studentIds.map(id => simState.users[id].name).join(' & ');
+      const matchId = `match:corp:${names}`;
+
+      if (simState.matches[matchId]) {
+        alert("すでにスカウト送信済みです。");
+        return;
+      }
+
+      simState.matches[matchId] = {
+        id: matchId,
+        studentIds: studentIds,
+        status: MatchStatus.SCOUTED,
+        interviewType: isPair ? 'タイプ:ペア' : 'タイプ:単体',
+        names: names
+      };
+
+      demo_render();
+    }
+
+    function demo_advance_match(matchId, targetStatus) {
+      const match = simState.matches[matchId];
+      if (!match) return;
+
+      match.status = targetStatus;
+
+      // Billing calculation
+      const isPair = match.interviewType === 'タイプ:ペア';
+      if (targetStatus === MatchStatus.INTERVIEW_SET) {
+        const amount = isPair ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW;
+        simState.billing.push({
+          id: `bill:${Date.now()}`,
+          matchId: match.id,
+          amount: amount,
+          type: '手数料:面談',
+          label: `${match.names} (面談料)`
+        });
+      } else if (targetStatus === MatchStatus.HIRED) {
+        const amount = isPair ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE;
+        simState.billing.push({
+          id: `bill:${Date.now()}`,
+          matchId: match.id,
+          amount: amount,
+          type: '手数料:採用',
+          label: `${match.names} (採用料)`
+        });
+      }
+
+      demo_render();
+    }
+
+    function demo_reset() {
+      init_state();
+      demo_render();
+    }
+
+    // --- Renderers ---
+    function demo_render() {
+      render_students();
+      render_funnel();
+      render_billing();
+    }
+
+    function render_students() {
+      const container = document.getElementById('student-db-list');
+      const students = Object.values(simState.users);
+      
+      let html = '';
+      students.forEach(s => {
+        // Check mutual
+        const mutualFriends = s.friends.filter(fid => simState.users[fid]?.friends.includes(s.id));
+        const hasMutual = mutualFriends.length > 0;
+        
+        let companionInfo = '';
+        if (hasMutual) {
+          const companionNames = mutualFriends.map(fid => simState.users[fid].name).join(', ');
+          companionInfo = `<span class="badge badge-accent">親友リンク成立中: ${companionNames}</span>`;
+        } else if (s.id === 'std:charlie') {
+          // Special button for Charlie to activate mutual best friend link
+          companionInfo = `
+            <div style="margin-top: 10px;">
+              <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75em;" onclick="window.demo_link_friend()">鈴木(捕手)を親友に登録する</button>
+            </div>
+          `;
+        } else if (s.id === 'std:dave') {
+          companionInfo = `<span class="badge badge-primary">佐藤(投手)をお気に入りに設定中</span>`;
+        }
+
+        const canPairScout = hasMutual;
+        
+        html += `
+          <div class="student-card">
+            <div class="student-name">${s.name}</div>
+            <div class="student-sport">${s.sport}</div>
+            <div class="student-desc">${s.desc}</div>
+            <div>${companionInfo}</div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.75em;" onclick="window.demo_send_scout(['${s.id}'], false)">単体スカウト</button>
+              ${canPairScout ? `
+                <button class="btn btn-accent" style="padding: 6px 12px; font-size: 0.75em;" onclick="window.demo_send_scout(['${s.id}', '${mutualFriends[0]}'], true)">ペアスカウト</button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function render_funnel() {
+      const container = document.getElementById('selection-funnel-list');
+      const matches = Object.values(simState.matches);
+
+      if (matches.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 30px 0;">アクティブな選考はありません。左カラムからスカウトを送ってみましょう！</p>`;
+        return;
+      }
+
+      let html = '';
+      matches.forEach(m => {
+        const isPair = m.interviewType === 'タイプ:ペア';
+        
+        let actionButtons = '';
+        if (m.status === MatchStatus.SCOUTED) {
+          actionButtons = `
+            <button class="btn btn-success" style="padding: 5px 10px; font-size: 0.75em;" onclick="window.demo_advance_match('${m.id}', '${MatchStatus.INTERVIEW_SET}')">面談確定</button>
+          `;
+        } else if (m.status === MatchStatus.INTERVIEW_SET) {
+          actionButtons = `
+            <button class="btn btn-accent" style="padding: 5px 10px; font-size: 0.75em;" onclick="window.demo_advance_match('${m.id}', '${MatchStatus.HIRED}')">採用確定</button>
+          `;
+        } else {
+          actionButtons = `<span style="font-size: 0.8em; color: var(--success-color); font-weight: bold;">採用おめでとうございます！</span>`;
+        }
+
+        html += `
+          <div class="match-row" style="border-left-color: ${isPair ? 'var(--accent-color)' : 'var(--primary-color)'};">
+            <div class="match-header">
+              <span class="match-names">${m.names}</span>
+              <span class="match-status-badge">${m.status}</span>
+            </div>
+            <div style="font-size: 0.8em; color: var(--text-sub); margin-bottom: 12px;">
+              選考種別: ${isPair ? '親友ペアスカウト' : '単体通常スカウト'}
+            </div>
+            <div style="text-align: right;">
+              ${actionButtons}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function render_billing() {
+      const container = document.getElementById('billing-summary');
+      const billing = simState.billing;
+
+      if (billing.length === 0) {
+        container.innerHTML = `
+          <p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 30px 0;">まだ発生した請求はありません。</p>
+          <div class="total-box">
+            <strong>合計請求額:</strong>
+            <span class="total-amount">${formatJPY(0)}</span>
+          </div>
+        `;
+        return;
+      }
+
+      let total = 0;
+      let html = '';
+      billing.forEach(b => {
+        total += b.amount;
+        html += `
+          <div class="billing-row">
+            <span>[${b.type}] ${b.label}</span>
+            <span class="tag-value">${formatJPY(b.amount)}</span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = `
+        <div style="max-height: 300px; overflow-y: auto;">
+          ${html}
+        </div>
+        <div class="total-box">
+          <strong>合計請求額:</strong>
+          <span class="total-amount">${formatJPY(total)}</span>
+        </div>
+      `;
+    }
+
+    // --- Bindings ---
+    window.demo_link_friend = demo_link_friend;
+    window.demo_send_scout = demo_send_scout;
+    window.demo_advance_match = demo_advance_match;
+    window.demo_reset = demo_reset;
+
+    // --- Start ---
+    init_state();
+    demo_render();
+  </script>
+</body>
+</html>
