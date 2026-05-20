@@ -89,6 +89,14 @@ export function snsReducer(state, event) {
       break;
     }
 
+    case 'REJECT_SCOUT': {
+      const match = matches[payload.matchId];
+      if (match) {
+        match.status = MatchStatus.REJECTED;
+      }
+      break;
+    }
+
     case 'SET_INTERVIEW': {
       const match = matches[payload.matchId];
       if (match) {
@@ -133,13 +141,44 @@ export function snsReducer(state, event) {
 export function snsValidator(state, event) {
   const { type, payload } = event;
 
+  if (!payload) return false;
+
+  if (type === 'USER_REGISTER') {
+    if (!payload.id || !payload.role || !payload.name) return false;
+  }
+
+  if (type === 'SET_FRIEND') {
+    if (!payload.studentId || !payload.friendId) return false;
+    const s1 = state.users[payload.studentId];
+    const s2 = state.users[payload.friendId];
+    if (!s1 || !s2 || s1.role !== Roles.STUDENT || s2.role !== Roles.STUDENT) return false;
+  }
+
+  if (type === 'SET_AUTH') {
+    if (!payload.publicId || !payload.identity) return false;
+  }
+
   if (type === 'SEND_SCOUT') {
     // If pair scout, check eligibility
     if (payload.studentIds.length === 2) {
       const s1 = state.users[payload.studentIds[0]];
       const s2 = state.users[payload.studentIds[1]];
       if (!s1 || !s2 || !checkPairEligibility(s1, s2)) return false;
+    } else if (payload.studentIds.length === 1) {
+      const s = state.users[payload.studentIds[0]];
+      if (!s || s.role !== Roles.STUDENT) return false;
+    } else {
+      return false;
     }
+    const c = state.users[payload.corpId];
+    if (!c || c.role !== Roles.CORPORATION) return false;
+  }
+
+  if (type === 'REJECT_SCOUT') {
+    const match = state.matches[payload.matchId];
+    if (!match) return false;
+    const worlds = evalConstraint(StatusTransitions, { from: match.status, to: MatchStatus.REJECTED });
+    if (worlds._contradiction || !worlds.worlds[0]._isValid) return false;
   }
 
   if (type === 'SET_INTERVIEW' || type === 'MARK_HIRED') {

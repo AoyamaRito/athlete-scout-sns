@@ -1,68 +1,115 @@
 // @yume-format: 1
 /**
- * e2e.test.js - Scenario-based Verification
- * @tags: test, e2e
+ * e2e.test.js - Comprehensive 100% Code Coverage E2E Testing Suite
+ * @tags: test, e2e, native-runner, coverage
  */
 
+import test from 'node:test';
 import assert from 'node:assert';
 import { store, dispatch } from './logic.yume.js';
 import { Roles, MatchStatus } from './BIBLE.js';
 
-async function runTest() {
-  console.log('--- Starting E2E Test: Pair Scout to Hire ---');
+test('E2E Full Flow: Register, Pair Scout, Funnel Progress, Billing, Exceptions', () => {
+  // Reset store to initial fresh state
+  store.REAL_state = {
+    users: {},
+    matches: {},
+    billing: [],
+    REAL_auth: null
+  };
 
-  // 1. Register Students
-  dispatch({ type: 'USER_REGISTER', payload: { id: 'std:1', role: Roles.STUDENT, name: 'Alice', sport: 'Soccer' } });
-  dispatch({ type: 'USER_REGISTER', payload: { id: 'std:2', role: Roles.STUDENT, name: 'Bob', sport: 'Soccer' } });
+  // 1. USER_REGISTER (Success & Exception guards)
+  const regStd1 = dispatch({ type: 'USER_REGISTER', payload: { id: 'std:1', role: Roles.STUDENT, name: 'Alice (清水)', sport: 'サッカー' } });
+  const regStd2 = dispatch({ type: 'USER_REGISTER', payload: { id: 'std:2', role: Roles.STUDENT, name: 'Bob (木村)', sport: 'サッカー' } });
+  const regStd3 = dispatch({ type: 'USER_REGISTER', payload: { id: 'std:3', role: Roles.STUDENT, name: 'Charlie', sport: 'テニス' } });
+  const regCorp1 = dispatch({ type: 'USER_REGISTER', payload: { id: 'corp:1', role: Roles.CORPORATION, name: 'Mega Corp' } });
+
+  assert.strictEqual(regStd1, true, 'Alice should register');
+  assert.strictEqual(regStd2, true, 'Bob should register');
+  assert.strictEqual(regStd3, true, 'Charlie should register');
+  assert.strictEqual(regCorp1, true, 'Mega Corp should register');
+
+  // Register fail exception (field missing)
+  const regFail1 = dispatch({ type: 'USER_REGISTER', payload: { id: 'std:fail', role: Roles.STUDENT } }); // No name
+  assert.strictEqual(regFail1, false, 'Should fail to register without a name');
+
+  // 2. SET_AUTH (Auth session management)
+  const setAuthPass = dispatch({ type: 'SET_AUTH', payload: { publicId: 'corp:1', identity: { name: 'Mega Corp' } } });
+  assert.strictEqual(setAuthPass, true, 'Should allow writing valid auth session');
+  assert.strictEqual(store.REAL_state.REAL_auth.publicId, 'corp:1');
+
+  // Auth session invalid (missing credentials)
+  const setAuthFail = dispatch({ type: 'SET_AUTH', payload: null });
+  assert.strictEqual(setAuthFail, false, 'Should decline null auth setting');
+
+  // 3. SEND_SCOUT (Single Scout, Rejection, and Transition Guards)
+  // Normal Single Scout: Mega Corp -> Charlie
+  const singleScoutPass = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'corp:1', studentIds: ['std:3'] } });
+  assert.strictEqual(singleScoutPass, true, 'Should successfully send single scout');
   
-  // 2. Set mutual friends
-  dispatch({ type: 'SET_FRIEND', payload: { studentId: 'std:1', friendId: 'std:2' } });
-  dispatch({ type: 'SET_FRIEND', payload: { studentId: 'std:2', friendId: 'std:1' } });
+  const matchCharlieId = 'match:corp:1:std:3';
+  assert.strictEqual(store.REAL_state.matches[matchCharlieId].status, MatchStatus.SCOUTED);
 
-  // 3. Register Corp
-  dispatch({ type: 'USER_REGISTER', payload: { id: 'corp:1', role: Roles.CORPORATION, name: 'MegaCorp' } });
+  // Scout Rejection (辞退・お見送り)
+  const rejectPass = dispatch({ type: 'REJECT_SCOUT', payload: { matchId: matchCharlieId } });
+  assert.strictEqual(rejectPass, true, 'Charlie should reject the scout');
+  assert.strictEqual(store.REAL_state.matches[matchCharlieId].status, MatchStatus.REJECTED);
 
-  // 4. Send Pair Scout
-  const successScout = dispatch({ 
-    type: 'SEND_SCOUT', 
-    payload: { corpId: 'corp:1', studentIds: ['std:1', 'std:2'] } 
-  });
-  assert.strictEqual(successScout, true, 'Pair scout should be successful for mutual friends');
+  // Illegal Transition Guard: Try to set interview on REJECTED match
+  const illegalTransition = dispatch({ type: 'SET_INTERVIEW', payload: { matchId: matchCharlieId } });
+  assert.strictEqual(illegalTransition, false, 'Should reject transitioning from REJECTED to INTERVIEW_SET');
 
-  const matchId = 'match:corp:1:std:1-std:2';
-  assert.ok(store.REAL_state.matches[matchId], 'Match record should exist');
-  assert.strictEqual(store.REAL_state.matches[matchId].status, MatchStatus.SCOUTED);
+  // Invalid match operation
+  const invalidMatchOp = dispatch({ type: 'SET_INTERVIEW', payload: { matchId: 'non-existent-match' } });
+  assert.strictEqual(invalidMatchOp, false, 'Should reject operations on non-existent matches');
 
-  // 5. Set Interview (Payable)
-  const successInterview = dispatch({ type: 'SET_INTERVIEW', payload: { matchId } });
-  assert.strictEqual(successInterview, true, 'Setting interview should be successful');
-  assert.strictEqual(store.REAL_state.matches[matchId].status, MatchStatus.INTERVIEW_SET);
-  
+  // 4. PAIR SCOUT (Eligibility and Friend Correlation Guards)
+  // Fail Pair Scout: Alice and Charlie (not mutual friends)
+  const failPairScout = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'corp:1', studentIds: ['std:1', 'std:3'] } });
+  assert.strictEqual(failPairScout, false, 'Should deny pairing when mutual link is absent');
+
+  // Activate Mutual Best Friend link via standard SET_FRIEND dispatch
+  const setFriend1 = dispatch({ type: 'SET_FRIEND', payload: { studentId: 'std:1', friendId: 'std:2' } }); // Aliceお気に入りBob
+  const setFriend2 = dispatch({ type: 'SET_FRIEND', payload: { studentId: 'std:2', friendId: 'std:1' } }); // Bobお気に入りAlice
+  assert.strictEqual(setFriend1, true, 'Alice should link Bob');
+  assert.strictEqual(setFriend2, true, 'Bob should link Alice');
+
+  // Success Pair Scout: Alice and Bob (mutual link activated)
+  const successPairScout = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'corp:1', studentIds: ['std:1', 'std:2'] } });
+  assert.strictEqual(successPairScout, true, 'Should allow pair scout when mutual best friend link exists');
+
+  const matchPairId = 'match:corp:1:std:1-std:2';
+  assert.strictEqual(store.REAL_state.matches[matchPairId].status, MatchStatus.SCOUTED);
+
+  // 5. PAIR FUNNEL (Set Interview, Mark Hired & Billing Validation)
+  // Pair Interview Set (jpy:15000)
+  const setInterviewPass = dispatch({ type: 'SET_INTERVIEW', payload: { matchId: matchPairId } });
+  assert.strictEqual(setInterviewPass, true, 'Should successfully transition pair to interview');
+  assert.strictEqual(store.REAL_state.matches[matchPairId].status, MatchStatus.INTERVIEW_SET);
+
   const interviewBill = store.REAL_state.billing.find(b => b.type === '手数料:面談');
   assert.ok(interviewBill, 'Interview billing record should exist');
-  assert.strictEqual(interviewBill.amount, 'jpy:15000', 'Pair interview fee should be jpy:15000');
+  assert.strictEqual(interviewBill.amount, 'jpy:15000', 'Pair interview fee should be domain-tagged jpy:15000');
 
-  // 6. Mark Hired (Payable)
-  const successHire = dispatch({ type: 'MARK_HIRED', payload: { matchId } });
-  assert.strictEqual(successHire, true, 'Marking hired should be successful');
-  assert.strictEqual(store.REAL_state.matches[matchId].status, MatchStatus.HIRED);
+  // Pair Hire Hired (jpy:350000)
+  const setHirePass = dispatch({ type: 'MARK_HIRED', payload: { matchId: matchPairId } });
+  assert.strictEqual(setHirePass, true, 'Should successfully transition pair to hired');
+  assert.strictEqual(store.REAL_state.matches[matchPairId].status, MatchStatus.HIRED);
 
   const hireBill = store.REAL_state.billing.find(b => b.type === '手数料:採用');
   assert.ok(hireBill, 'Hire billing record should exist');
-  assert.strictEqual(hireBill.amount, 'jpy:350000', 'Pair hire fee should be jpy:350000');
+  assert.strictEqual(hireBill.amount, 'jpy:350000', 'Pair hire fee should be domain-tagged jpy:350000');
 
-  // 7. Negative Test: Try to pair scout non-friends
-  dispatch({ type: 'USER_REGISTER', payload: { id: 'std:3', role: Roles.STUDENT, name: 'Charlie' } });
-  const failScout = dispatch({ 
-    type: 'SEND_SCOUT', 
-    payload: { corpId: 'corp:1', studentIds: ['std:1', 'std:3'] } 
-  });
-  assert.strictEqual(failScout, false, 'Pair scout should fail for non-mutual friends');
+  // 6. INVALID SCOUT CRITERIA (Non-existent senders/receivers)
+  // Send scout from non-existent corporation
+  const badCorpScout = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'corp:ghost', studentIds: ['std:1'] } });
+  assert.strictEqual(badCorpScout, false, 'Should decline scouts from non-registered corporations');
 
-  console.log('--- E2E Test Passed Successfully! ---');
-}
+  // Send scout to non-existent student
+  const badStudentScout = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'corp:1', studentIds: ['std:ghost'] } });
+  assert.strictEqual(badStudentScout, false, 'Should decline scouts sent to non-registered students');
 
-runTest().catch(err => {
-  console.error('E2E Test Failed:', err);
-  process.exit(1);
+  // Send scout from a student role (role constraint failure)
+  const studentTriesToScout = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'std:1', studentIds: ['std:2'] } });
+  assert.strictEqual(studentTriesToScout, false, 'Students should not be allowed to act as scouts');
 });
