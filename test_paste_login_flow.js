@@ -19,7 +19,7 @@ import { chromium } from 'playwright';
 
   // 1. Go to page
   console.log('Navigating to live Student Portal...');
-  await page.goto('https://03409349.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
+  await page.goto('https://fb8ff777.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
 
   // 2. Click Register
   console.log('Clicking "新しく学生アカウントを作る"...');
@@ -33,7 +33,7 @@ import { chromium } from 'playwright';
 
   // 4. Reload page to go back to clean login state
   console.log('Reloading page to return to Login screen...');
-  await page.goto('https://03409349.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
+  await page.goto('https://fb8ff777.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(1000);
 
   // 5. Fill the paste-key-input textarea with the extracted key
@@ -42,8 +42,8 @@ import { chromium } from 'playwright';
   await page.waitForTimeout(500);
 
   // 6. Click the login button
-  console.log('Clicking "テキスト鍵でログイン"...');
-  await page.click('text=テキスト鍵でログイン');
+  console.log('Clicking "鍵テキストでログイン"...');
+  await page.click('text=鍵テキストでログイン');
 
   // Wait for transition
   console.log('Waiting for authentication and rendering...');
