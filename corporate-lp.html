@@ -3,583 +3,443 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>体育会系学生スカウトSNS - 採用担当者向け「タッグ採用」のご案内</title>
-  <!-- QR Code and jsQR libraries for Ed25519 authentication -->
+  <title>Athlete Scout - 採用担当者向け「タッグ採用」のご案内</title>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-  <!-- TweetNacl for local cryptographic Ed25519 simulation if needed -->
   <script src="https://cdn.jsdelivr.net/npm/tweetnacl@1.0.3/nacl-fast.min.js"></script>
   <style>
     :root {
-      --primary-color: #1877f2;
-      --primary-hover: #166fe5;
-      --accent-color: #f5a623;
-      --accent-hover: #e0951a;
-      --bg-color: #f0f2f5;
+      --primary-color: #1a2b4c;
+      --primary-hover: #101e38;
+      --accent-color: #bfa37a;
+      --accent-hover: #a3875e;
+      --bg-color: #fafafb;
       --card-bg: #ffffff;
-      --text-main: #050505;
-      --text-sub: #65676b;
-      --border-color: #e4e6eb;
-      --success-color: #42b72a;
+      --text-main: #1f242d;
+      --text-sub: #717a8a;
+      --border-color: #e2e5eb;
+      --success-color: #2e7d32;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       color: var(--text-main);
       background-color: var(--bg-color);
-      line-height: 1.6;
+      line-height: 1.7;
+      letter-spacing: 0.03em;
     }
-
-    /* Layout structure */
     header {
       background-color: var(--card-bg);
       border-bottom: 1px solid var(--border-color);
       position: sticky;
       top: 0;
       z-index: 100;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
     }
-
     .header-container {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 15px 20px;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-
     .logo {
-      font-size: 1.4em;
-      font-weight: bold;
+      font-size: 1.3em;
+      font-weight: 700;
       color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      letter-spacing: 0.05em;
     }
-
     .logo-badge {
       background-color: var(--accent-color);
       color: white;
-      font-size: 0.5em;
-      padding: 3px 6px;
-      border-radius: 4px;
+      font-size: 0.55em;
+      padding: 4px 8px;
+      border-radius: 2px;
       text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 0.1em;
+      margin-left: 10px;
     }
-
     .container {
       max-width: 1100px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 50px 20px;
     }
-
-    /* Buttons */
     .btn {
       display: inline-block;
       background-color: var(--primary-color);
       color: white;
-      padding: 12px 24px;
-      font-size: 1em;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
+      padding: 14px 28px;
+      font-size: 0.95em;
+      font-weight: 600;
+      border: 1px solid var(--primary-color);
+      border-radius: 2px;
       cursor: pointer;
       text-decoration: none;
-      transition: background-color 0.2s, transform 0.1s;
+      transition: background-color 0.2s, border-color 0.2s;
       text-align: center;
+      letter-spacing: 0.05em;
     }
-
     .btn:hover {
       background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
     }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
     .btn-secondary {
-      background-color: #e4e6eb;
-      color: #050505;
+      background-color: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
     }
-
     .btn-secondary:hover {
-      background-color: #d8dadf;
+      background-color: #f0f2f5;
     }
-
     .btn-accent {
       background-color: var(--accent-color);
-      color: white;
+      border-color: var(--accent-color);
     }
-
     .btn-accent:hover {
       background-color: var(--accent-hover);
+      border-color: var(--accent-hover);
     }
-
     .btn-success {
       background-color: var(--success-color);
-      color: white;
+      border-color: var(--success-color);
     }
-
     .btn-success:hover {
-      background-color: #36a420;
+      background-color: #215c25;
+      border-color: #215c25;
     }
-
-    /* Hero Section */
     .hero {
-      background: linear-gradient(135deg, #1877f2 0%, #0d4b9c 100%);
+      background-color: var(--primary-color);
       color: white;
-      padding: 80px 20px;
+      padding: 100px 20px;
       text-align: center;
-      border-radius: 0 0 40px 40px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-
     .hero-tag {
       display: inline-block;
-      background-color: rgba(255, 255, 255, 0.2);
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.9em;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 5px 15px;
+      font-size: 0.85em;
       font-weight: bold;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255,255,255,0.4);
+      letter-spacing: 0.1em;
+      margin-bottom: 25px;
+      text-transform: uppercase;
     }
-
     .hero h1 {
-      font-size: 2.5em;
-      font-weight: 800;
-      line-height: 1.3;
-      margin-bottom: 20px;
+      font-size: 2.8em;
+      font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 25px;
+      letter-spacing: 0.05em;
     }
-
     .hero p {
-      font-size: 1.2em;
+      font-size: 1.15em;
       max-width: 800px;
-      margin: 0 auto 35px;
-      opacity: 0.9;
+      margin: 0 auto 40px;
+      opacity: 0.85;
+      font-weight: 300;
     }
-
     .hero-badge-pricing {
       display: inline-flex;
       background-color: var(--accent-color);
       color: white;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 1.1em;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      animation: pulse 2s infinite;
+      padding: 10px 24px;
+      font-weight: 600;
+      font-size: 1em;
+      margin-bottom: 35px;
+      letter-spacing: 0.05em;
     }
-
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.03); }
-      100% { transform: scale(1); }
-    }
-
-    /* Section styling */
     .section {
       background-color: var(--card-bg);
-      border-radius: 12px;
-      padding: 40px;
-      margin-bottom: 40px;
+      border-radius: 0;
+      padding: 50px;
+      margin-bottom: 50px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     }
-
     .section-title {
-      font-size: 1.8em;
+      font-size: 2em;
       font-weight: 700;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       text-align: center;
-      position: relative;
+      letter-spacing: 0.05em;
     }
-
     .section-title::after {
       content: '';
       display: block;
-      width: 50px;
-      height: 4px;
-      background-color: var(--primary-color);
-      margin: 10px auto 0;
-      border-radius: 2px;
+      width: 40px;
+      height: 2px;
+      background-color: var(--accent-color);
+      margin: 15px auto 0;
     }
-
     .section-desc {
       text-align: center;
       color: var(--text-sub);
       max-width: 700px;
-      margin: 0 auto 40px;
+      margin: 0 auto 50px;
+      font-size: 0.95em;
     }
-
-    /* Feature Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 25px;
+      gap: 30px;
       margin-top: 20px;
     }
-
     .card {
-      background-color: #f7f8fa;
-      border-radius: 10px;
-      padding: 30px;
+      background-color: #fafafb;
+      padding: 40px 30px;
       border: 1px solid var(--border-color);
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: background-color 0.2s;
     }
-
-    .card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 8px 16px rgba(0,0,0,0.05);
-    }
-
-    .card-icon {
-      font-size: 2.5em;
-      margin-bottom: 15px;
-      display: block;
-    }
-
+    .card:hover { background-color: #f5f6f8; }
     .card h4 {
-      font-size: 1.2em;
-      margin-bottom: 12px;
+      font-size: 1.15em;
+      margin-bottom: 15px;
       color: var(--primary-color);
+      font-weight: 700;
     }
-
     .card p {
       color: var(--text-sub);
-      font-size: 0.95em;
+      font-size: 0.9em;
+      line-height: 1.7;
     }
-
-    /* Pricing Layout */
     .pricing-cards {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 30px;
       margin-top: 30px;
     }
-
     .price-card {
       background-color: var(--card-bg);
-      border: 2px solid var(--border-color);
-      border-radius: 12px;
-      padding: 35px 25px;
+      border: 1px solid var(--border-color);
+      padding: 45px 30px;
       text-align: center;
-      position: relative;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+      position: relative;
     }
-
     .price-card.featured {
-      border-color: var(--accent-color);
-      box-shadow: 0 8px 24px rgba(245, 166, 35, 0.15);
+      border: 2px solid var(--accent-color);
     }
-
     .price-card.featured::before {
-      content: 'おすすめ';
+      content: '推奨プラン';
       position: absolute;
-      top: -15px;
+      top: -13px;
       left: 50%;
       transform: translateX(-50%);
       background-color: var(--accent-color);
       color: white;
-      font-size: 0.85em;
+      font-size: 0.75em;
       font-weight: bold;
-      padding: 4px 15px;
-      border-radius: 20px;
+      padding: 3px 18px;
+      letter-spacing: 0.1em;
     }
-
     .price-card-title {
-      font-size: 1.3em;
+      font-size: 1.2em;
       font-weight: 700;
       margin-bottom: 15px;
+      letter-spacing: 0.05em;
     }
-
     .price-tag {
       font-size: 1.8em;
-      font-weight: 800;
+      font-weight: 700;
       color: var(--text-main);
-      margin: 15px 0;
+      margin: 20px 0;
       display: flex;
       justify-content: center;
       align-items: baseline;
       gap: 4px;
     }
-
-    .price-tag span {
-      font-size: 0.5em;
-      color: var(--text-sub);
-      font-weight: normal;
-    }
-
-    .price-tag-value {
-      font-family: monospace;
-      color: var(--primary-color);
-    }
-
+    .price-tag span { font-size: 0.5em; color: var(--text-sub); }
+    .price-tag-value { font-family: monospace; color: var(--primary-color); }
     .price-features {
       list-style: none;
       text-align: left;
-      margin: 25px 0;
-      font-size: 0.95em;
+      margin: 30px 0;
+      font-size: 0.9em;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
     }
-
     .price-features li {
       margin-bottom: 12px;
       display: flex;
-      align-items: center;
-      gap: 8px;
+      align-items: baseline;
+      gap: 10px;
     }
-
     .price-features li::before {
-      content: '✓';
-      color: var(--success-color);
+      content: '・';
+      color: var(--accent-color);
       font-weight: bold;
     }
-
-    /* OK Button & Trial Area */
     .trial-box {
-      background-color: #fff9e6;
-      border: 1px dashed var(--accent-color);
-      border-radius: 8px;
-      padding: 25px;
-      margin-top: 35px;
+      background-color: #fafafb;
+      border: 1px solid var(--border-color);
+      border-top: 3px solid var(--accent-color);
+      padding: 35px;
+      margin-top: 45px;
       text-align: center;
     }
-
     .trial-box h4 {
-      color: #946306;
-      margin-bottom: 10px;
+      color: var(--primary-color);
+      margin-bottom: 15px;
       font-size: 1.15em;
+      font-weight: 700;
     }
-
     .invoice-preview {
       background: #ffffff;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      padding: 20px;
-      max-width: 400px;
-      margin: 20px auto 0;
+      padding: 30px;
+      max-width: 450px;
+      margin: 30px auto 0;
       text-align: left;
       font-family: monospace;
       font-size: 0.85em;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
       display: none;
     }
-
     .invoice-header {
-      border-bottom: 1px double #000;
-      padding-bottom: 10px;
-      margin-bottom: 10px;
+      border-bottom: 1px solid #1f242d;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
       text-align: center;
       font-weight: bold;
+      font-size: 1.1em;
+      letter-spacing: 0.1em;
     }
-
-    /* Calculator */
     .calc-container {
-      background-color: #f7f8fa;
+      background-color: #fafafb;
       border: 1px solid var(--border-color);
-      border-radius: 10px;
-      padding: 30px;
+      padding: 40px;
       margin-top: 30px;
     }
-
     .calc-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 0;
+      padding: 15px 0;
       border-bottom: 1px solid var(--border-color);
     }
-
-    .calc-row:last-child {
-      border-bottom: none;
-    }
-
-    .calc-label {
-      font-weight: 600;
-    }
-
+    .calc-row:last-child { border-bottom: none; }
+    .calc-label { font-weight: 700; }
     .calc-desc {
-      font-size: 0.8em;
+      font-size: 0.85em;
       color: var(--text-sub);
       display: block;
-      font-weight: normal;
+      margin-top: 3px;
     }
-
-    .calc-input {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
+    .calc-input { display: flex; align-items: center; gap: 10px; }
     .calc-select, .calc-num {
-      padding: 8px 12px;
-      border-radius: 6px;
+      padding: 10px 15px;
       border: 1px solid var(--border-color);
       background-color: white;
-      font-size: 0.95em;
+      font-size: 0.9em;
+      outline: none;
     }
-
     .calc-result-box {
       background-color: var(--primary-color);
       color: white;
-      border-radius: 8px;
-      padding: 25px;
+      padding: 30px;
       text-align: center;
-      margin-top: 25px;
-      box-shadow: 0 4px 10px rgba(24, 119, 242, 0.2);
+      margin-top: 35px;
     }
-
     .calc-result-title {
-      font-size: 0.9em;
-      opacity: 0.9;
-      text-transform: uppercase;
+      font-size: 0.85em;
+      opacity: 0.8;
       font-weight: bold;
-      margin-bottom: 5px;
+      margin-bottom: 8px;
+      letter-spacing: 0.1em;
     }
-
     .calc-result-val {
-      font-size: 2.2em;
-      font-weight: 800;
+      font-size: 2.5em;
+      font-weight: 700;
       font-family: monospace;
       display: block;
-      margin: 5px 0;
+      color: var(--accent-color);
     }
-
     .calc-result-tag {
-      background-color: rgba(255,255,255,0.2);
-      font-size: 0.85em;
+      background-color: rgba(255,255,255,0.1);
+      font-size: 0.8em;
       display: inline-block;
-      padding: 3px 10px;
-      border-radius: 12px;
+      padding: 4px 14px;
+      border: 1px solid rgba(255,255,255,0.2);
     }
-
-    /* Forms */
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-
+    .form-group { margin-bottom: 25px; }
+    .form-label { display: block; font-weight: 700; margin-bottom: 10px; }
     .form-control {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: 1px solid var(--border-color);
-      border-radius: 6px;
-      font-size: 1em;
+      font-size: 0.95em;
       background-color: white;
-      transition: border-color 0.2s;
     }
-
-    .form-control:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
-
-    /* Portal Specific Styles */
+    .form-control:focus { outline: none; border-color: var(--accent-color); }
     .portal-container {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 30px;
+      gap: 40px;
     }
-    @media (min-width: 900px) {
-      .portal-container {
-        grid-template-columns: 2fr 1fr;
-      }
+    @media (min-width: 950px) {
+      .portal-container { grid-template-columns: 2fr 1.2fr; }
     }
-
     .student-card {
       background-color: #fff;
       border: 1px solid var(--border-color);
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 15px;
+      padding: 25px;
+      margin-bottom: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      transition: box-shadow 0.2s;
     }
-    .student-card:hover {
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
     .badge {
-      font-size: 0.75em;
-      padding: 3px 8px;
-      border-radius: 12px;
+      font-size: 0.7em;
+      padding: 4px 10px;
       font-weight: bold;
       display: inline-block;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
     .badge-primary {
-      background-color: #e7f3ff;
+      background-color: #f0f2f5;
       color: var(--primary-color);
+      border: 1px solid var(--border-color);
     }
     .badge-accent {
-      background-color: #fff1d6;
-      color: #b7791f;
+      background-color: #fbf5eb;
+      color: #8c6d3f;
+      border: 1px solid #e8dbca;
     }
-
     .match-row {
-      background-color: #f7f8fa;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 12px;
-      border-left: 4px solid var(--primary-color);
+      background-color: #fafafb;
+      padding: 20px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+      border-left: 3px solid var(--primary-color);
       font-size: 0.9em;
     }
-
     .billing-row {
-      background-color: #fff5f5;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
+      background-color: #fafafb;
+      padding: 14px;
+      margin-bottom: 12px;
       font-size: 0.85em;
       font-family: monospace;
       display: flex;
       justify-content: space-between;
-    }
-
-    /* Footer */
-    footer {
-      background-color: #ffffff;
-      border-top: 1px solid var(--border-color);
-      padding: 40px 20px;
-      text-align: center;
-      font-size: 0.9em;
-      color: var(--text-sub);
+      border: 1px solid var(--border-color);
     }
   </style>
 </head>
 <body>
 
-  <!-- Header -->
   <header>
     <div class="header-container">
       <div class="logo">
-        🏟 Athlete Scout <span class="logo-badge">For Corp</span>
+        Athlete Scout <span class="logo-badge">For Corp</span>
       </div>
       <div id="header-auth-section">
-        <!-- Replaced dynamically based on login state -->
-        <a href="#recruiter-portal" class="btn btn-accent" style="padding: 8px 16px; font-size: 0.9em;" onclick="window.smooth_scroll_to_portal()">採用管理にログイン</a>
+        <a href="#recruiter-portal" class="btn btn-accent" style="padding: 8px 20px; font-size: 0.85em;" onclick="window.smooth_scroll_to_portal()">採用管理にログイン</a>
       </div>
     </div>
   </header>
 
-  <!-- Main LP Content (Wrapped inside a div to toggle visibility easily) -->
   <div id="lp-main-view">
-    <!-- Hero Section -->
     <section class="hero">
       <div class="hero-tag">採用担当者向け特設LP</div>
       <h1>孤独な採用から、タッグ採用へ。</h1>
@@ -588,38 +448,33 @@
         お互いを理解し支え合う最強の2人を同時に獲得することで、新入社員の離職率を未然にゼロへと近づけます。
       </p>
       <div class="hero-badge-pricing">
-        🎁 3ヶ月完全無料試用キャンペーン実施中
+        3ヶ月完全無料試用キャンペーン実施中
       </div>
       <div>
-        <a href="#trial" class="btn btn-accent" style="font-size: 1.1em; padding: 15px 35px; box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);">
-          今すぐ3ヶ月間無料でお試し
+        <a href="#trial" class="btn btn-accent" style="font-size: 1.05em; padding: 16px 40px;">
+          3ヶ月間無料でお試し
         </a>
       </div>
     </section>
 
     <div class="container">
-      <!-- Section 1: Features -->
       <section class="section">
         <h3 class="section-title">ペアスカウトがもたらす革新的な価値</h3>
         <p class="section-desc">なぜ体育会系学生をペアでスカウト・採用すべきなのか？その理由をご説明します。</p>
-        
         <div class="grid">
           <div class="card">
-            <span class="card-icon">🤝</span>
             <h4>本音を引き出す「ペア面談」</h4>
             <p>
               1対1の面接ではガチガチに取り繕っていた学生が、信頼を置く親友と同席するだけで、本来のコミュニケーション力や素の魅力、お互いの協力体制を抜群に発揮します。
             </p>
           </div>
           <div class="card">
-            <span class="card-icon">⚡</span>
             <h4>即戦力としての相乗効果</h4>
             <p>
               お互いのプレイスタイルや弱点を把握している2人だからこそ、配属初日からお互いをフォローし合い、単体採用を遥かに凌駕するシナジーを組織に呼び込みます。
             </p>
           </div>
           <div class="card">
-            <span class="card-icon">🎯</span>
             <h4>内定辞退・早期離職をゼロに</h4>
             <p>
               「親友と一緒に働く」という強固なつながりがメンタルの最大の支えとなり、内定後の他社への流出を完全に防ぎ、入社後の早期離職トラブルを完全に撲滅します。
@@ -628,35 +483,29 @@
         </div>
       </section>
 
-      <!-- Section 2: Recruiter Login Area (New Action Bridge) -->
-      <section class="section" id="recruiter-portal" style="background: #f7f9fc; border-color: #d0e1fd;">
-        <h3 class="section-title">💼 採用管理ポータルログイン</h3>
+      <section class="section" id="recruiter-portal" style="background: #fafafb; border-color: var(--border-color);">
+        <h3 class="section-title">採用管理ポータルログイン</h3>
         <p class="section-desc">採用担当者様用の管理画面です。新規アカウント登録をして無料でお試しいただくか、お持ちの認証QR画像でログインしてください。</p>
-        
-        <div style="max-width: 550px; margin: 0 auto; text-align: center; background: white; padding: 30px; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.03);">
+        <div style="max-width: 550px; margin: 0 auto; text-align: center; background: white; padding: 40px; border: 1px solid var(--border-color);">
           <div id="auth-form-area">
-            <p style="font-size: 0.95em; color: var(--text-sub); margin-bottom: 25px;">
-              テスト用の企業アカウントを作成してワンクリックログイン、またはお手持ちの「採用パスポート（QR画像）」をアップロードして瞬時にセキュアな認証が完了します。
+            <p style="font-size: 0.9em; color: var(--text-sub); margin-bottom: 30px; line-height: 1.8;">
+              テスト用の企業アカウントを作成してワンクリックログイン、またはお手持ちの「採用パスポート」QR画像をアップロードして認証が完了します。
             </p>
             <div style="display: flex; flex-direction: column; gap: 15px;">
-              <!-- Quick test login -->
-              <button class="btn btn-accent" style="padding: 14px;" onclick="window.portal_quick_demo_login()">
-                🚀 デモ用アカウントで即時ログイン（推奨）
+              <button class="btn btn-accent" style="padding: 15px;" onclick="window.portal_quick_demo_login()">
+                デモ用アカウントで即時ログイン（推奨）
               </button>
-              
-              <div style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-sub); font-size: 0.85em; margin: 5px 0;">
-                <span style="flex-grow: 1; border-top: 1px solid #ddd;"></span>
-                <span>または 採用パスポート（QR）で入室</span>
-                <span style="flex-grow: 1; border-top: 1px solid #ddd;"></span>
+              <div style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-sub); font-size: 0.8em; margin: 10px 0;">
+                <span style="flex-grow: 1; border-top: 1px solid #eee;"></span>
+                <span>または 採用パスポートで入室</span>
+                <span style="flex-grow: 1; border-top: 1px solid #eee;"></span>
               </div>
-
-              <!-- Real QR input -->
               <input type="file" id="portal-qr-file" style="display:none;" onchange="window.portal_handle_qr_upload(this)">
-              <button class="btn btn-secondary" style="padding: 12px;" onclick="document.getElementById('portal-qr-file').click()">
-                📷 採用パスポートQR画像を読み込み
+              <button class="btn btn-secondary" style="padding: 13px;" onclick="document.getElementById('portal-qr-file').click()">
+                採用パスポート画像を読み込み
               </button>
-              <button class="btn btn-secondary" style="padding: 10px; font-size: 0.85em;" onclick="window.portal_generate_new_key()">
-                🔑 企業用の新規アカウント鍵(QR)を発行
+              <button class="btn btn-secondary" style="padding: 11px; font-size: 0.85em; border-color: #ddd; color: var(--text-sub);" onclick="window.portal_generate_new_key()">
+                企業用の新規アカウント鍵を発行
               </button>
             </div>
             <div id="portal-qr-output" style="margin-top: 20px;"></div>
@@ -664,17 +513,14 @@
         </div>
       </section>
 
-      <!-- Section 3: Pricing -->
       <section class="section" id="pricing">
         <h3 class="section-title">明確かつシンプルな料金体系</h3>
         <p class="section-desc">すべての料金は明快な Domain-Tagged Values に従って処理されます。追加の手数料は一切発生いたしません。</p>
-
         <div class="pricing-cards">
-          <!-- Card 1 -->
           <div class="price-card">
             <div>
               <div class="price-card-title">無料トライアル</div>
-              <div style="font-size: 0.9em; color: var(--text-sub);">すべての機能をノーリスクでお試し</div>
+              <div style="font-size: 0.85em; color: var(--text-sub);">すべての機能をノーリスクでお試し</div>
               <div class="price-tag">
                 <span class="price-tag-value">jpy:0</span>
                 <span> / 最初の3ヶ月</span>
@@ -685,14 +531,13 @@
                 <li>「親友リンク」の相関図閲覧可能</li>
               </ul>
             </div>
-            <a href="#trial" class="btn btn-secondary">今すぐお試し</a>
+            <a href="#trial" class="btn btn-secondary" style="margin-top: 20px;">お試し登録</a>
           </div>
 
-          <!-- Card 2 (Featured) -->
           <div class="price-card featured">
             <div>
               <div class="price-card-title">継続プラン (9ヶ月)</div>
-              <div style="font-size: 0.9em; color: var(--text-sub); font-weight: bold; color: var(--accent-color);">無料試用終了後に移行可能</div>
+              <div style="font-size: 0.85em; color: var(--accent-color); font-weight: bold;">無料試用終了後に移行可能</div>
               <div class="price-tag">
                 <span class="price-tag-value">jpy:77000</span>
                 <span> / 継続9ヶ月間利用</span>
@@ -701,79 +546,73 @@
                 <li>無料試用（3ヶ月）終了後に適用</li>
                 <li>お気に入り学生のデータベース継続</li>
                 <li>追加9ヶ月使えて実質月額約8,500円</li>
-                <li><strong>OKボタン一発で請求書払い完了</strong></li>
+                <li>OKボタン一発で請求書払い完了</li>
               </ul>
             </div>
-            <a href="#trial-simulation" class="btn">OKボタン体験デモへ</a>
+            <a href="#trial-simulation" class="btn btn-accent" style="margin-top: 20px;">OKボタン体験デモへ</a>
           </div>
 
-          <!-- Card 3 -->
           <div class="price-card">
             <div>
               <div class="price-card-title">プロ営業員同行プラン</div>
-              <div style="font-size: 0.9em; color: var(--text-sub);">面談に慣れていない人事様向け</div>
-              <ul class="price-features" style="margin: 15px 0;">
+              <div style="font-size: 0.85em; color: var(--text-sub);">面談に慣れていない人事様向け</div>
+              <ul class="price-features" style="margin: 20px 0;">
                 <li>
-                  <strong>シニア同行:</strong> 
+                  シニア同行: 
                   <span class="price-tag-value" style="font-weight: bold; margin-left: 5px;">jpy:33000</span><span> / 回</span>
                 </li>
                 <li style="margin-top: 10px;">
-                  <strong>ジュニア同行:</strong> 
+                  ジュニア同行: 
                   <span class="price-tag-value" style="font-weight: bold; margin-left: 5px;">jpy:11000</span><span> / 回</span>
                 </li>
               </ul>
-              <p style="font-size: 0.85em; color: var(--text-sub); text-align: left;">
+              <p style="font-size: 0.85em; color: var(--text-sub); text-align: left; line-height: 1.6;">
                 当社のベテラン営業、もしくは若手営業担当者がカジュアル面談に立ち会い、学生の緊張をほぐし魅力的な動機づけをサポートします。
               </p>
             </div>
-            <a href="#simulator" class="btn btn-secondary" style="margin-top: 20px;">シミュレータで計算</a>
+            <a href="#simulator" class="btn btn-secondary" style="margin-top: 20px; border-color: #ccc; color: #555;">シミュレータで計算</a>
           </div>
         </div>
 
-        <!-- OK Button Virtual Experience -->
         <div class="trial-box" id="trial-simulation">
-          <h4>💡 [インタラクティブ模擬体験] 3ヶ月試用終了時の『OKボタン』請求デモ</h4>
-          <p style="font-size: 0.9em; color: var(--text-sub); margin-bottom: 15px;">
+          <h4>[インタラクティブ模擬体験] 3ヶ月試用終了時の「OKボタン」請求デモ</h4>
+          <p style="font-size: 0.85em; color: var(--text-sub); margin-bottom: 25px;">
             3ヶ月の無料試用期間が終了した場面をシミュレートしています。以下の「OKボタン」を押すことで、瞬時に9ヶ月間の継続契約が確定し、7.7万円の請求書が自動発行されます。
           </p>
           <div id="trial-panel">
-            <div style="background-color: #ffffff; padding: 15px; border-radius: 6px; display: inline-block; margin-bottom: 15px; border: 1px solid var(--border-color);">
-              <strong style="color: #d0021b;">⚠️ 無料試用(3ヶ月)が終了しました。</strong><br>
-              <span style="font-size: 0.85em; color: var(--text-sub);">引き続き9ヶ月間サービスを利用しますか？</span>
+            <div style="background-color: #ffffff; padding: 20px; display: inline-block; margin-bottom: 20px; border: 1px solid var(--border-color);">
+              <strong style="color: #c0392b;">無料試用(3ヶ月)が終了しました。</strong><br>
+              <span style="font-size: 0.85em; color: var(--text-sub); display: block; margin-top: 5px;">引き続き9ヶ月間サービスを利用しますか？</span>
             </div>
             <div>
-              <button class="btn btn-accent" style="padding: 12px 30px;" onclick="window.demo_trigger_invoice()">OK (継続利用・請求書発行)</button>
+              <button class="btn btn-accent" style="padding: 12px 35px;" onclick="window.demo_trigger_invoice()">OK (継続利用・請求書発行)</button>
             </div>
           </div>
 
-          <!-- Populated Invoice -->
           <div class="invoice-preview" id="invoice-box">
-            <div class="invoice-header">📄 御請求書 (INVOICE)</div>
-            <div><strong>宛先：</strong> 貴社 採用ご担当者様</div>
+            <div class="invoice-header">御請求書 (INVOICE)</div>
+            <div style="margin-bottom: 5px;"><strong>宛先：</strong> 貴社 採用ご担当者様</div>
             <div><strong>発行日：</strong> <span id="inv-date"></span></div>
-            <div style="margin: 15px 0; border-top: 1px dashed #ccc; border-bottom: 1px dashed #ccc; padding: 10px 0;">
+            <div style="margin: 20px 0; border-top: 1px solid #1f242d; border-bottom: 1px solid #1f242d; padding: 15px 0; line-height: 1.8;">
               <strong>件名：</strong> アスリートスカウト継続利用（9ヶ月）<br>
-              <strong>請求金額：</strong> <span style="font-size: 1.2em; font-weight: bold; color: var(--primary-color);">jpy:77000</span> (税込価格: 77,000円)<br>
+              <strong>請求金額：</strong> <span style="font-size: 1.25em; font-weight: bold; color: var(--primary-color);">jpy:77000</span> (税込価格: 77,000円)<br>
               <strong>利用期間：</strong> 試用終了翌日から9ヶ月間
             </div>
-            <div style="font-size: 0.8em; color: var(--text-sub);">
+            <div style="font-size: 0.8em; color: var(--text-sub); line-height: 1.6;">
               ※お支払期限は翌月末日となります。銀行振込にてお支払いください。<br>
-              ※本請求書 is デモ体験用です。
+              ※本請求書はデモ体験用です。
             </div>
-            <div style="text-align: right; margin-top: 15px;">
-              <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8em;" onclick="window.demo_reset_invoice()">リセットする</button>
+            <div style="text-align: right; margin-top: 20px;">
+              <button class="btn btn-secondary" style="padding: 6px 15px; font-size: 0.8em;" onclick="window.demo_reset_invoice()">リセットする</button>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Section 4: Calculator Simulator -->
       <section class="section" id="simulator">
         <h3 class="section-title">お見積もりシミュレーター</h3>
         <p class="section-desc">ご希望のオプションや想定採用人数を選択し、最終支払費用をDomain-Tagged Value形式で瞬時にシミュレーションします。</p>
-
         <div class="calc-container">
-          <!-- Row 1 -->
           <div class="calc-row">
             <div>
               <span class="calc-label">基本利用プラン</span>
@@ -786,56 +625,46 @@
               </select>
             </div>
           </div>
-
-          <!-- Row 2 -->
           <div class="calc-row">
             <div>
               <span class="calc-label">営業員同行（シニア）</span>
               <span class="calc-desc">面談にベテラン営業員が立ち会います (jpy:33000 / 回)</span>
             </div>
             <div class="calc-input">
-              <input type="number" id="calc-senior" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+              <input type="number" id="calc-senior" class="calc-num" value="0" min="0" style="width: 80px;" onchange="window.calc_totals()">
               <span>回</span>
             </div>
           </div>
-
-          <!-- Row 3 -->
           <div class="calc-row">
             <div>
               <span class="calc-label">営業員同行（ジュニア）</span>
               <span class="calc-desc">若手営業員が立ち会い、学生の心を開きます (jpy:11000 / 回)</span>
             </div>
             <div class="calc-input">
-              <input type="number" id="calc-junior" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+              <input type="number" id="calc-junior" class="calc-num" value="0" min="0" style="width: 80px;" onchange="window.calc_totals()">
               <span>回</span>
             </div>
           </div>
-
-          <!-- Row 4 -->
           <div class="calc-row">
             <div>
               <span class="calc-label">単体採用 成功人数</span>
               <span class="calc-desc">単体での採用成果報酬 (jpy:200000 / 人)</span>
             </div>
             <div class="calc-input">
-              <input type="number" id="calc-single-hires" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+              <input type="number" id="calc-single-hires" class="calc-num" value="0" min="0" style="width: 80px;" onchange="window.calc_totals()">
               <span>人</span>
             </div>
           </div>
-
-          <!-- Row 5 -->
           <div class="calc-row">
             <div>
               <span class="calc-label">ペア採用 成功セット数 (2人一組)</span>
               <span class="calc-desc">親友リンクお墨付きのペア採用ボーナス (jpy:350000 / 組)</span>
             </div>
             <div class="calc-input">
-              <input type="number" id="calc-pair-hires" class="calc-num" value="0" min="0" max="100" style="width: 80px;" onchange="window.calc_totals()" oninput="window.calc_totals()">
+              <input type="number" id="calc-pair-hires" class="calc-num" value="0" min="0" style="width: 80px;" onchange="window.calc_totals()">
               <span>組</span>
             </div>
           </div>
-
-          <!-- Calculated Result -->
           <div class="calc-result-box">
             <div class="calc-result-title">概算御見積額合計（REAL Value）</div>
             <span class="calc-result-val" id="calc-total-display">jpy:77000</span>
@@ -844,519 +673,331 @@
         </div>
       </section>
 
-      <!-- Section 5: Contact Form -->
       <section class="section" id="trial">
         <h3 class="section-title">まずは3ヶ月、無料で試用を開始する</h3>
-        <p class="section-desc">企業名と連絡先をご登録いただくだけで、本日のログイン用QR認証証を発行・即時利用可能になります。</p>
-
+        <p class="section-desc">企業名と連絡先をご登録いただくだけで、ログイン用鍵を発行いたします。</p>
         <form onsubmit="window.demo_handle_submit(event)">
           <div class="form-group">
-            <label class="form-label" for="corp-name">企業名 <span style="color: red;">*</span></label>
+            <label class="form-label" for="corp-name">企業名 <span style="color: #c0392b;">*</span></label>
             <input type="text" id="corp-name" class="form-control" placeholder="例：株式会社アスリートパワー" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="contact-person">ご担当者様氏名 <span style="color: red;">*</span></label>
+            <label class="form-label" for="contact-person">ご担当者様氏名 <span style="color: #c0392b;">*</span></label>
             <input type="text" id="contact-person" class="form-control" placeholder="例：鈴木 大介" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="contact-email">連絡先メールアドレス <span style="color: red;">*</span></label>
+            <label class="form-label" for="contact-email">連絡先メールアドレス <span style="color: #c0392b;">*</span></label>
             <input type="email" id="contact-email" class="form-control" placeholder="例：hr@athlete-power.co.jp" required>
           </div>
-          <button type="submit" class="btn btn-accent" style="width: 100%; padding: 15px; font-size: 1.1em; margin-top: 10px;">
-            アカウントを生成して無料試用を開始する
+          <button type="submit" class="btn btn-accent" style="width: 100%; padding: 15px; font-size: 1em; margin-top: 10px;">
+            無料試用を開始する
           </button>
         </form>
       </section>
     </div>
   </div>
 
-  <!-- Real Recruiter Portal Container (Initially Hidden, shown on successful login) -->
+  <!-- Real Recruiter Portal Container -->
   <div id="recruiter-portal-view" style="display: none;" class="container">
-    <div class="section" style="border-top: 6px solid var(--primary-color);">
-      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">
+    <div class="section" style="border-top: 4px solid var(--primary-color);">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
         <div>
-          <span style="font-size: 0.85em; color: var(--accent-color); font-weight: bold; text-transform: uppercase;">採用担当者ダッシュボード</span>
-          <h2 style="margin: 0; display: flex; align-items: center; gap: 10px;">
-            💼 <span id="portal-corp-name">デモ企業株式会社</span>
+          <span style="font-size: 0.8em; color: var(--accent-color); font-weight: bold; text-transform: uppercase; letter-spacing: 0.05em;">採用担当者ダッシュボード</span>
+          <h2 style="margin: 5px 0 0 0; font-weight: 700; letter-spacing: 0.02em;">
+            <span id="portal-corp-name">デモ企業株式会社</span>
           </h2>
-          <span style="font-size: 0.75em; color: var(--text-sub); font-family: monospace;">企業ID: <span id="portal-corp-id">unknown</span></span>
+          <span style="font-size: 0.75em; color: var(--text-sub); font-family: monospace; display: block; margin-top: 5px;">企業ID: <span id="portal-corp-id">unknown</span></span>
         </div>
         <div>
-          <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9em;" onclick="window.portal_logout()">ログアウト</button>
+          <button class="btn btn-secondary" style="padding: 8px 20px; font-size: 0.85em; border-radius: 0;" onclick="window.portal_logout()">ログアウト</button>
         </div>
       </div>
 
-      <!-- Main portal interface grid -->
       <div class="portal-container">
-        
-        <!-- Left Side: Student DB -->
         <div>
-          <h3 style="margin-bottom: 15px; font-size: 1.25em; display: flex; align-items: center; gap: 8px;">
-            🏃‍♂️ アスリート学生データベース <span class="badge badge-primary" id="student-count-badge">4名登録中</span>
+          <h3 style="margin-bottom: 20px; font-size: 1.25em; font-weight: 700; letter-spacing: 0.02em;">
+            アスリート学生データベース <span class="badge badge-primary" id="student-count-badge">4名登録中</span>
           </h3>
-          <p style="font-size: 0.85em; color: var(--text-sub); margin-bottom: 20px;">
-            ※相互に「親友リンク ❤️」を結んでいる学生を複数選ぶと、自動的に「ペアスカウト」になります。
+          <p style="font-size: 0.85em; color: var(--text-sub); margin-bottom: 25px; line-height: 1.7;">
+            ※相互に「親友リンク」を結んでいる学生を複数選ぶと、自動的に「ペアスカウト」になります。
           </p>
-          
-          <div id="student-list-container">
-            <!-- Rendered dynamically -->
-          </div>
+          <div id="student-list-container"></div>
         </div>
 
-        <!-- Right Side: Scout Funnel & Incurred billing -->
         <div>
-          <!-- Active Funnel -->
-          <div style="background-color: #f7f8fa; border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; margin-bottom: 25px;">
-            <h4 style="margin-bottom: 15px; font-size: 1.1em; display: flex; align-items: center; gap: 6px;">
-              🎯 スカウト進捗管理
+          <div style="background-color: #fafafb; border: 1px solid var(--border-color); padding: 25px; margin-bottom: 30px;">
+            <h4 style="margin-bottom: 20px; font-size: 1.05em; font-weight: 700;">
+              スカウト進捗管理
             </h4>
             <div id="scout-funnel-container">
               <p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 20px 0;">送ったスカウトがここに表示されます。</p>
             </div>
           </div>
 
-          <!-- Live Billing (A11 tagged) -->
-          <div style="background-color: #fff9f9; border: 1px solid #ffe8e8; border-radius: 8px; padding: 20px;">
-            <h4 style="margin-bottom: 15px; font-size: 1.1em; color: #d0021b; display: flex; align-items: center; gap: 6px;">
-              💳 発生利用料金 (REAL_billing)
+          <div style="background-color: #fafafb; border: 1px solid var(--border-color); border-top: 3px solid #c0392b; padding: 25px;">
+            <h4 style="margin-bottom: 20px; font-size: 1.05em; color: #c0392b; font-weight: 700;">
+              発生利用料金 (REAL_billing)
             </h4>
             <div id="portal-billing-container">
               <p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 15px 0;">まだ発生した手数料はありません。</p>
             </div>
-            
-            <div style="border-top: 1px solid #ffd1d1; padding-top: 15px; margin-top: 15px; display: flex; justify-content: space-between; align-items: baseline;">
+            <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 20px; display: flex; justify-content: space-between; align-items: baseline;">
               <strong>合計金額:</strong>
-              <span id="portal-total-billing-amount" style="font-size: 1.8em; font-weight: 800; font-family: monospace; color: #d0021b;">jpy:0</span>
+              <span id="portal-total-billing-amount" style="font-size: 1.8em; font-weight: 700; font-family: monospace; color: #c0392b;">jpy:0</span>
             </div>
           </div>
         </div>
-
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
   <footer>
     <p>© 2026 Athlete Scout SNS (Tagg Recruiting Platform) All Rights Reserved.</p>
-    <p style="font-size: 0.8em; margin-top: 10px; opacity: 0.7;">本プラットフォームのデータ及び規律は yume-develop 公理 A0〜A14 に準拠して厳密にガバナンスされています。</p>
+    <p style="font-size: 0.8em; margin-top: 10px; opacity: 0.7; line-height: 1.7;">本プラットフォームのデータ及び規律は yume-develop 公理 A0〜A14 に準拠して厳密にガバナンスされています。</p>
   </footer>
 
-  <!-- Scripts: Vanilla JS Interaction -->
   <script>
-    // ============================================================
-    // 🌌 yume CORE STATE (In-Memory simulated business engine)
-    // ============================================================
     const MatchStatus = {
       SCOUTED: '状態:スカウト済み',
       INTERVIEW_SET: '状態:面談設定済み',
       HIRED: '状態:採用確定',
       REJECTED: '状態:辞退・お見送り'
     };
-
     const Fees = {
       SINGLE_INTERVIEW: 10000,
       PAIR_INTERVIEW: 15000,
       SINGLE_HIRE: 200000,
       PAIR_HIRE: 350000
     };
-
-    // Global in-memory state representing local sandbox
     const REAL_state = {
       users: {
-        'std:alice': { id: 'std:alice', name: 'Alice (清水 美咲)', sport: 'サッカー部 (FW)', friends: ['std:bob'] },
-        'std:bob': { id: 'std:bob', name: 'Bob (木村 拓海)', sport: 'サッカー部 (MF)', friends: ['std:alice'] }, // Mutual friend with Alice
-        'std:charlie': { id: 'std:charlie', name: 'Charlie (佐藤 大翔)', sport: '野球部 (投手)', friends: [] },
-        'std:dave': { id: 'std:dave', name: 'Dave (鈴木 翔太)', sport: '野球部 (捕手)', friends: ['std:charlie'] } // Charlie doesn't follow Dave back yet
+        'std:alice': { id: 'std:alice', name: '清水 美咲', sport: 'サッカー部 (FW)', friends: ['std:bob'] },
+        'std:bob': { id: 'std:bob', name: '木村 拓海', sport: 'サッカー部 (MF)', friends: ['std:alice'] },
+        'std:charlie': { id: 'std:charlie', name: '佐藤 大翔', sport: '野球部 (投手)', friends: [] },
+        'std:dave': { id: 'std:dave', name: '鈴木 翔太', sport: '野球部 (捕手)', friends: ['std:charlie'] }
       },
       matches: {},
       billing: [],
-      REAL_auth: null // Recruiter session { corpId, name }
+      REAL_auth: null
     };
 
-    function formatJPY(amount) {
-      return "jpy:" + amount;
-    }
-
-    // Smooth scroll helper
+    function formatJPY(amount) { return "jpy:" + amount; }
     function smooth_scroll_to_portal() {
       document.getElementById('recruiter-portal').scrollIntoView({ behavior: 'smooth' });
     }
-
-    // ============================================================
-    // 🔐 AUTHENTICATION LOGIC (Ed25519 style QR)
-    // ============================================================
     async function portal_quick_demo_login() {
-      // Create mock identity and login instantly
-      const demoAuth = {
-        corpId: 'corp:demo',
-        name: '株式会社スポーツリーディング'
-      };
-      
-      portal_perform_login(demoAuth);
+      portal_perform_login({ corpId: 'corp:demo', name: '株式会社スポーツリーディング' });
     }
-
     function portal_perform_login(authObj) {
       REAL_state.REAL_auth = authObj;
-      
-      // Update UI Header
       document.getElementById('header-auth-section').innerHTML = `
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span style="font-size:0.9em; font-weight:bold; color:var(--primary-color);">💼 ${authObj.name}</span>
-          <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8em;" onclick="window.portal_logout()">ログアウト</button>
+        <div style="display:flex; align-items:center; gap:15px;">
+          <span style="font-size:0.9em; font-weight:700; color:var(--primary-color);">💼 ${authObj.name}</span>
+          <button class="btn btn-secondary" style="padding:6px 15px; font-size:0.8em; border-radius: 0;" onclick="window.portal_logout()">ログアウト</button>
         </div>
       `;
-
-      // Swap views
       document.getElementById('lp-main-view').style.display = 'none';
       document.getElementById('recruiter-portal-view').style.display = 'block';
-
-      // Load portal details
       document.getElementById('portal-corp-name').innerText = authObj.name;
       document.getElementById('portal-corp-id').innerText = authObj.corpId;
-
       portal_render_all();
     }
-
     function portal_logout() {
       REAL_state.REAL_auth = null;
-      // Reset matches & billing for sandbox fresh experience on next login
       REAL_state.matches = {};
       REAL_state.billing = [];
-
-      // Update Header
       document.getElementById('header-auth-section').innerHTML = `
-        <a href="#recruiter-portal" class="btn btn-accent" style="padding: 8px 16px; font-size: 0.9em;" onclick="window.smooth_scroll_to_portal()">採用管理にログイン</a>
+        <a href="#recruiter-portal" class="btn btn-accent" style="padding: 8px 20px; font-size: 0.85em;" onclick="window.smooth_scroll_to_portal()">採用管理にログイン</a>
       `;
-
-      // Swap views back
       document.getElementById('recruiter-portal-view').style.display = 'none';
       document.getElementById('lp-main-view').style.display = 'block';
     }
-
     async function portal_generate_new_key() {
-      // In-browser client cryptographic keygen using tweetnacl
       const keypair = nacl.sign.keyPair();
       const publicHex = Array.from(keypair.publicKey).map(b => b.toString(16).padStart(2, '0')).join('');
       const seedHex = Array.from(keypair.secretKey.slice(0,32)).map(b => b.toString(16).padStart(2, '0')).join('');
-      
-      const corpName = prompt("登録する企業名を入力してください:", "テストテクノロジー株式会社") || "デモ企業株式会社";
+      const corpName = prompt("登録する企業名を入力してください:", "デモ企業株式会社") || "デモ企業株式会社";
       const recoveryKey = "recruiter-key:" + seedHex + ":" + publicHex + ":" + encodeURIComponent(corpName);
-
-      const typeNumber = 0;
-      const errorCorrectionLevel = 'H';
-      const qr = qrcode(typeNumber, errorCorrectionLevel);
+      const qr = qrcode(0, 'H');
       qr.addData(recoveryKey);
       qr.make();
-
       const outEl = document.getElementById('portal-qr-output');
       outEl.innerHTML = `
-        <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 1px solid #1877f2; margin-top: 20px; text-align: left;">
-          <p style="color: #050505; font-weight: bold; text-align:center;">🔒 採用パスポート(Ed25519)が発行されました</p>
-          <p style="font-size: 0.85em; color: var(--text-sub); text-align:center; margin-bottom:15px;">
-            この鍵画像(QR)を保存し、次回ログイン時にアップロードしてご使用ください。
-          </p>
-          <div id="rec-qrcode" style="text-align:center; margin: 15px 0;"></div>
-          <div style="text-align:center; margin-bottom:15px;">
-            <button class="btn btn-accent" style="padding:8px 16px; font-size:0.9em;" onclick="window.portal_download_qr('${publicHex}')">鍵画像をダウンロード</button>
+        <div style="background: #fafafb; padding: 25px; border: 1px solid var(--border-color); margin-top: 25px; text-align: left;">
+          <p style="color: #050505; font-weight: bold; text-align:center;">採用パスポート(Ed25519)が発行されました</p>
+          <p style="font-size: 0.8em; color: var(--text-sub); text-align:center; margin:10px 0 20px;">この鍵画像(QR)を保存し、ログイン時にアップロードしてご使用ください。</p>
+          <div id="rec-qrcode" style="text-align:center; margin: 20px 0;"></div>
+          <div style="text-align:center; margin-bottom:20px;">
+            <button class="btn btn-accent" style="padding:8px 18px; font-size:0.85em;" onclick="window.portal_download_qr('${publicHex}')">鍵画像をダウンロード</button>
           </div>
-          <p style="font-size: 0.7em; word-break: break-all; color: var(--text-sub); background: white; padding: 10px; border-radius: 4px; border:1px solid #eee;">
-            <strong>企業ID:</strong> corp:${publicHex.slice(0, 16)}<br>
-            <strong>登録名:</strong> ${corpName}
+          <p style="font-size: 0.75em; word-break: break-all; color: var(--text-sub); background: white; padding: 15px; border:1px solid #e2e5eb;">
+            <strong>企業ID:</strong> corp:${publicHex.slice(0, 16)}<br><strong>登録名:</strong> ${corpName}
           </p>
           <canvas id="rec-qr-canvas" style="display: none;"></canvas>
         </div>
       `;
-
       const qrContainer = document.getElementById('rec-qrcode');
       qrContainer.innerHTML = qr.createImgTag(4);
-
       window.portal_download_qr = (id) => {
         const img = qrContainer.querySelector('img');
         const canvas = document.getElementById('rec-qr-canvas');
         const ctx = canvas.getContext('2d');
         const runDownload = () => {
-          canvas.width = img.width + 40;
-          canvas.height = img.height + 40;
-          ctx.fillStyle = 'white';
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.drawImage(img, 20, 20);
-          const link = document.createElement('a');
-          link.download = `recruiter-key-${id.slice(0,8)}.png`;
-          link.href = canvas.toDataURL('image/png');
-          link.click();
+          canvas.width = img.width + 40; canvas.height = img.height + 40;
+          ctx.fillStyle = 'white'; ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.drawImage(img, 20, 20);
+          const link = document.createElement('a'); link.download = `recruiter-key-${id.slice(0,8)}.png`; link.href = canvas.toDataURL('image/png'); link.click();
         };
-        if (img.complete) runDownload();
-        else img.onload = runDownload;
+        if (img.complete) runDownload(); else img.onload = runDownload;
       };
     }
-
     async function portal_handle_qr_upload(input) {
-      const file = input.files[0];
-      if (!file) return;
+      const file = input.files[0]; if (!file) return;
       const reader = new FileReader();
       reader.onload = async (e) => {
         const img = new Image();
         img.onload = async () => {
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
+          const canvas = document.createElement('canvas'); const ctx = canvas.getContext('2d');
+          canvas.width = img.width; canvas.height = img.height; ctx.drawImage(img, 0, 0);
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           if (code && code.data.startsWith("recruiter-key:")) {
             const parts = code.data.split(":");
-            const publicHex = parts[2];
-            const corpName = decodeURIComponent(parts[3] || "採用企業");
-            
-            portal_perform_login({
-              corpId: "corp:" + publicHex.slice(0, 16),
-              name: corpName
-            });
-          } else {
-            alert("無効な採用パスポート（QRコード）です。企業用の正しいQR画像を選択してください。");
-          }
+            portal_perform_login({ corpId: "corp:" + parts[2].slice(0, 16), name: decodeURIComponent(parts[3] || "採用企業") });
+          } else { alert("無効な採用パスポートです。"); }
         };
         img.src = e.target.result;
       };
       reader.readAsDataURL(file);
       input.value = '';
     }
-
-    // ============================================================
-    // 🏢 PORTAL RENDERING & BUSINESS INTERACTION
-    // ============================================================
     function portal_render_all() {
-      portal_render_student_db();
-      portal_render_scout_funnel();
-      portal_render_billing();
+      portal_render_student_db(); portal_render_scout_funnel(); portal_render_billing();
     }
-
     function portal_render_student_db() {
       const container = document.getElementById('student-list-container');
       const students = Object.values(REAL_state.users);
-      
       let html = '';
       students.forEach(s => {
-        // Find if this student has mutual "best friend" links
         const mutualFriends = s.friends.filter(fid => REAL_state.users[fid]?.friends.includes(s.id));
         const hasMutual = mutualFriends.length > 0;
-        
-        let companionInfo = '';
-        if (hasMutual) {
-          const companionNames = mutualFriends.map(fid => REAL_state.users[fid].name.split(' ')[0]).join(', ');
-          companionInfo = `<span class="badge badge-accent" style="margin-top: 5px;">❤️ 親友リンク成立中: ${companionNames}</span>`;
-        }
-
+        let companionInfo = hasMutual ? `<span class="badge badge-accent" style="margin-top: 5px;">親友リンク成立中: ${mutualFriends.map(fid => REAL_state.users[fid].name).join(', ')}</span>` : '';
         html += `
           <div class="student-card">
             <div>
-              <strong style="font-size: 1.1em; color: var(--text-main);">${s.name}</strong>
-              <div style="font-size: 0.9em; color: var(--text-sub); margin-top: 3px;">
-                🏃‍♂️ ${s.sport}
-              </div>
+              <strong style="font-size: 1.1em; color: var(--text-main); font-weight: 700;">${s.name}</strong>
+              <div style="font-size: 0.85em; color: var(--text-sub); margin-top: 4px;">${s.sport}</div>
               ${companionInfo}
             </div>
             <div style="display:flex; gap: 8px;">
-              <button class="btn btn-secondary" style="padding: 8px 12px; font-size: 0.85em;" onclick="window.portal_send_scout(['${s.id}'])">
-                単体スカウト
-              </button>
-              ${hasMutual ? `
-                <button class="btn btn-accent" style="padding: 8px 12px; font-size: 0.85em;" onclick="window.portal_send_scout(['${s.id}', '${mutualFriends[0]}'])">
-                  🤝 ペアスカウト送付
-                </button>
-              ` : ''}
+              <button class="btn btn-secondary" style="padding: 8px 15px; font-size: 0.8em; border-radius: 0;" onclick="window.portal_send_scout(['${s.id}'])">単体スカウト</button>
+              ${hasMutual ? `<button class="btn btn-accent" style="padding: 8px 15px; font-size: 0.8em; border-radius: 0;" onclick="window.portal_send_scout(['${s.id}', '${mutualFriends[0]}'])">ペアスカウト送付</button>` : ''}
             </div>
           </div>
         `;
       });
-      
       container.innerHTML = html;
     }
-
     function portal_send_scout(studentIds) {
       const corpId = REAL_state.REAL_auth.corpId;
       const matchId = `match:${corpId}:${[...studentIds].sort().join('-')}`;
-      
-      if (REAL_state.matches[matchId]) {
-        alert("この学生（またはペア）にはすでにスカウト送信済みです。");
-        return;
-      }
-
-      // Add to matches
-      REAL_state.matches[matchId] = {
-        id: matchId,
-        corpId: corpId,
-        studentIds: studentIds,
-        status: MatchStatus.SCOUTED,
-        interviewType: studentIds.length > 1 ? 'タイプ:ペア' : 'タイプ:単体',
-        createdAt: Date.now()
-      };
-
+      if (REAL_state.matches[matchId]) { alert("この学生（またはペア）にはすでにスカウト送信済みです。"); return; }
+      REAL_state.matches[matchId] = { id: matchId, corpId: corpId, studentIds: studentIds, status: MatchStatus.SCOUTED, interviewType: studentIds.length > 1 ? 'タイプ:ペア' : 'タイプ:単体' };
       portal_render_all();
     }
-
     function portal_render_scout_funnel() {
       const container = document.getElementById('scout-funnel-container');
       const matches = Object.values(REAL_state.matches);
-
       if (matches.length === 0) {
-        container.innerHTML = `<p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 20px 0;">送ったスカウトがここに表示されます。上のDBからスカウトを送ってみましょう！</p>`;
+        container.innerHTML = `<p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 20px 0;">送ったスカウトがここに表示されます。</p>`;
         return;
       }
-
       let html = '';
       matches.forEach(m => {
         const studentNames = m.studentIds.map(id => REAL_state.users[id]?.name || "学生").join(' & ');
         const isPair = m.interviewType === 'タイプ:ペア';
-        
         let actionButtons = '';
         if (m.status === MatchStatus.SCOUTED) {
-          actionButtons = `
-            <button class="btn btn-success" style="padding: 5px 10px; font-size: 0.8em;" onclick="window.portal_advance_match('${m.id}', 'SET_INTERVIEW')">
-              面談を確定する
-            </button>
-          `;
+          actionButtons = `<button class="btn btn-success" style="padding: 6px 12px; font-size: 0.75em; border-radius: 0;" onclick="window.portal_advance_match('${m.id}', 'SET_INTERVIEW')">面談を確定する</button>`;
         } else if (m.status === MatchStatus.INTERVIEW_SET) {
-          actionButtons = `
-            <button class="btn btn-accent" style="padding: 5px 10px; font-size: 0.8em;" onclick="window.portal_advance_match('${m.id}', 'MARK_HIRED')">
-              採用確定（内定）
-            </button>
-          `;
+          actionButtons = `<button class="btn btn-accent" style="padding: 6px 12px; font-size: 0.75em; border-radius: 0;" onclick="window.portal_advance_match('${m.id}', 'MARK_HIRED')">採用確定（内定）</button>`;
         }
-
         html += `
           <div class="match-row" style="border-left-color: ${isPair ? 'var(--accent-color)' : 'var(--primary-color)'};">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
               <div>
-                <strong>${studentNames}</strong>
+                <strong style="font-weight:700;">${studentNames}</strong>
                 <span class="badge ${isPair ? 'badge-accent' : 'badge-primary'}">${isPair ? 'ペア' : '単体'}</span>
               </div>
               <span style="font-size:0.8em; font-weight:bold; color:var(--text-sub);">${m.status}</span>
             </div>
-            <div style="margin-top: 10px; text-align: right;">
-              ${actionButtons}
-            </div>
+            <div style="margin-top: 15px; text-align: right;">${actionButtons}</div>
           </div>
         `;
       });
-
       container.innerHTML = html;
     }
-
     function portal_advance_match(matchId, actionType) {
-      const match = REAL_state.matches[matchId];
-      if (!match) return;
-
+      const match = REAL_state.matches[matchId]; if (!match) return;
       if (actionType === 'SET_INTERVIEW') {
         match.status = MatchStatus.INTERVIEW_SET;
-        const amount = match.interviewType === 'タイプ:ペア' ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW;
-        REAL_state.billing.push({
-          id: `bill:${Date.now()}`,
-          matchId: match.id,
-          amount: amount,
-          type: '手数料:面談'
-        });
+        REAL_state.billing.push({ id: `bill:${Date.now()}`, matchId: match.id, amount: match.interviewType === 'タイプ:ペア' ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW, type: '手数料:面談' });
       } else if (actionType === 'MARK_HIRED') {
         match.status = MatchStatus.HIRED;
-        const amount = match.interviewType === 'タイプ:ペア' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE;
-        REAL_state.billing.push({
-          id: `bill:${Date.now()}`,
-          matchId: match.id,
-          amount: amount,
-          type: '手数料:採用'
-        });
+        REAL_state.billing.push({ id: `bill:${Date.now()}`, matchId: match.id, amount: match.interviewType === 'タイプ:ペア' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE, type: '手数料:採用' });
       }
-
       portal_render_all();
     }
-
     function portal_render_billing() {
       const container = document.getElementById('portal-billing-container');
       const totalDisplay = document.getElementById('portal-total-billing-amount');
       const billing = REAL_state.billing;
-
       if (billing.length === 0) {
         container.innerHTML = `<p style="font-size: 0.85em; color: var(--text-sub); text-align: center; padding: 15px 0;">まだ発生した手数料はありません。</p>`;
-        totalDisplay.innerText = formatJPY(0);
-        return;
+        totalDisplay.innerText = formatJPY(0); return;
       }
-
-      let total = 0;
-      let html = '';
+      let total = 0; let html = '';
       billing.forEach(b => {
         total += b.amount;
-        html += `
-          <div class="billing-row">
-            <span>${b.type} (${b.matchId.split(':').pop()})</span>
-            <strong>${formatJPY(b.amount)}</strong>
-          </div>
-        `;
+        html += `<div class="billing-row"><span>${b.type} (${b.matchId.split(':').pop()})</span><strong>${formatJPY(b.amount)}</strong></div>`;
       });
-
       container.innerHTML = html;
       totalDisplay.innerText = formatJPY(total);
     }
-
-    // ============================================================
-    // 🧮 STATIC ESTIMATOR (From previous version)
-    // ============================================================
-    // --- Interactive Invoice Demo ---
     function demo_trigger_invoice() {
       const today = new Date();
-      const dateStr = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
-      
-      document.getElementById('inv-date').innerText = dateStr;
+      document.getElementById('inv-date').innerText = today.getFullYear() + '年' + (today.getMonth() + 1) + '月' + today.getDate() + '日';
       document.getElementById('trial-panel').style.display = 'none';
       document.getElementById('invoice-box').style.display = 'block';
     }
-
     function demo_reset_invoice() {
       document.getElementById('trial-panel').style.display = 'block';
       document.getElementById('invoice-box').style.display = 'none';
     }
-
-    // --- Real-time Simulator Logic ---
     function calc_totals() {
-      // 1. LIFT: Pull states from DOM to numeric variables
       const plan = document.getElementById('calc-plan').value;
       const seniorCount = parseInt(document.getElementById('calc-senior').value) || 0;
       const juniorCount = parseInt(document.getElementById('calc-junior').value) || 0;
       const singleHires = parseInt(document.getElementById('calc-single-hires').value) || 0;
       const pairHires = parseInt(document.getElementById('calc-pair-hires').value) || 0;
-
-      // 2. SCRATCH COMPUTATION: Numeric calculation
       let planPrice = (plan === 'full') ? 77000 : 0;
       let seniorPrice = seniorCount * 33000;
       let juniorPrice = juniorCount * 11000;
       let singleHiresPrice = singleHires * 200000;
       let pairHiresPrice = pairHires * 350000;
-
       let total = planPrice + seniorPrice + juniorPrice + singleHiresPrice + pairHiresPrice;
-
-      // 3. SETTLE & EXPOSE: Format back into domain-tagged string for display
-      const totalTagged = formatJPY(total);
-      document.getElementById('calc-total-display').innerText = totalTagged;
-
-      // Update Breakdown details (readable)
+      document.getElementById('calc-total-display').innerText = formatJPY(total);
       const parts = [];
       if (planPrice > 0) parts.push("継続利用: 7.7万円");
       if (seniorPrice > 0) parts.push("シニア同行: " + (seniorPrice/10000) + "万円");
       if (juniorPrice > 0) parts.push("ジュニア同行: " + (juniorPrice/10000) + "万円");
       if (singleHiresPrice > 0) parts.push("単体採用: " + (singleHiresPrice/10000) + "万円");
       if (pairHiresPrice > 0) parts.push("ペア採用: " + (pairHiresPrice/10000) + "万円");
-
       document.getElementById('calc-breakdown').innerText = parts.length > 0 ? parts.join(" + ") : "無料試用中 (基本料 jpy:0)";
     }
-
-    // --- Submit handler for demo ---
     function demo_handle_submit(e) {
       e.preventDefault();
-      const corpName = document.getElementById('corp-name').value;
-      alert("ありがとうございます！「" + corpName + "」様の3ヶ月無料試用アカウント（Ed25519ログイン鍵）が正常に発行されました。登録メールアドレス宛てにお送りいたします。");
+      alert("ありがとうございます！無料試用アカウントが正常に発行されました。");
     }
-
-    // Bindings
     window.demo_trigger_invoice = demo_trigger_invoice;
     window.demo_reset_invoice = demo_reset_invoice;
     window.calc_totals = calc_totals;
@@ -1368,8 +1009,6 @@
     window.portal_send_scout = portal_send_scout;
     window.portal_advance_match = portal_advance_match;
     window.smooth_scroll_to_portal = smooth_scroll_to_portal;
-
-    // Run initial calc
     calc_totals();
   </script>
 </body>
