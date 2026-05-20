@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Student Athlete Scout SNS</title>
     <style>
         :root {
@@ -21,64 +21,157 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
+            -webkit-tap-highlight-color: transparent;
         }
 
+        /* Desktop mockup wrapper */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-color);
+            background: #e2e8f0;
             color: var(--text-main);
-            line-height: 1.6;
-            padding: 15px;
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
         }
 
+        /* Mobile Frame Container */
         .container {
-            max-width: 800px;
-            margin: 0 auto;
             width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            max-height: 850px;
+            background: var(--bg-color);
+            border-radius: 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 {
+        /* If viewport is narrow, go 100% fullscreen */
+        @media (max-width: 480px), (max-height: 600px) {
+            .container {
+                max-width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+            }
+            body {
+                background: var(--bg-color);
+            }
+        }
+
+        /* Header Bar */
+        .app-header {
+            height: 56px;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .app-header h1 {
+            font-size: 1.05em;
+            font-weight: 800;
             color: var(--primary-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 12px;
+            letter-spacing: 0.02em;
+        }
+
+        /* App Body Frame */
+        #app {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Scrollable page body inside active tab */
+        .app-scroll-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 80px; /* safe bottom bar area */
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Bottom Nav Bar */
+        .bottom-nav {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+            box-shadow: 0 -3px 12px rgba(0,0,0,0.03);
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            color: var(--text-sub);
+            text-decoration: none;
+            cursor: pointer;
+            flex: 1;
+            height: 100%;
+            font-size: 0.65em;
             font-weight: 700;
-            letter-spacing: 0.03em;
-            margin-bottom: 24px;
+            transition: all 0.15s;
+        }
+
+        .bottom-nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .bottom-nav-item .icon {
             font-size: 1.4em;
-            text-align: center;
         }
 
-        h1 span {
-            display: block;
-            margin-top: 4px;
-            font-size: 0.6em;
-            font-weight: normal;
+        .bottom-nav-item:active {
+            transform: scale(0.94);
+            opacity: 0.8;
         }
 
+        /* Card Section Styling */
         .section {
             background: var(--card-bg);
-            margin-bottom: 20px;
-            padding: 20px;
+            margin-bottom: 16px;
+            padding: 18px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.01);
         }
 
-        .section h3, .section h4 {
+        .section h3 {
             color: var(--primary-color);
-            margin-bottom: 15px;
-            font-size: 1.1em;
+            margin-bottom: 12px;
+            font-size: 1.05em;
             border-left: 4px solid var(--primary-color);
             padding-left: 8px;
         }
 
-        /* Forms */
+        /* Forms (iOS zoom-free) */
         .input-field {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 0.95em;
+            border-radius: 6px;
+            font-size: 16px; /* prevent iOS zoom */
             background: #fff;
             color: var(--text-main);
             transition: border-color 0.2s, box-shadow 0.2s;
@@ -87,25 +180,23 @@
         .input-field:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.08);
+            box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.05);
         }
 
-        /* Buttons */
+        /* Touch-first Buttons */
         .btn {
             background: var(--primary-color);
             color: white;
             border: 1px solid var(--primary-color);
             padding: 12px 20px;
-            border-radius: 4px;
+            border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
             font-size: 0.95em;
-            letter-spacing: 0.03em;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.15s;
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
             min-height: 44px;
             width: 100%;
             text-decoration: none;
@@ -113,7 +204,11 @@
 
         .btn:hover {
             background: var(--primary-hover);
-            border-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.97);
+            opacity: 0.9;
         }
 
         .btn-secondary {
@@ -123,24 +218,19 @@
         }
 
         .btn-secondary:hover {
-            background: #f0f2f5;
+            background: #f1f5f9;
         }
 
-        /* User Cards & Lists */
+        /* List elements & cards */
         .user-card {
             border: 1px solid var(--border-color);
-            padding: 16px;
-            margin: 12px 0;
-            border-radius: 4px;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 6px;
             display: flex;
             flex-direction: column;
             gap: 12px;
             background: #fafafb;
-            transition: box-shadow 0.2s;
-        }
-
-        .user-card:hover {
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
         }
 
         .user-card-actions {
@@ -160,73 +250,74 @@
         .friend-badge {
             background: #eceef7;
             color: var(--primary-color);
-            padding: 4px 10px;
+            padding: 3px 8px;
             border-radius: 4px;
-            font-size: 0.75em;
+            font-size: 0.7em;
             font-weight: bold;
             border: 1px solid var(--border-color);
             display: inline-block;
         }
 
-        .billing-log {
-            font-family: monospace;
-            background: #fafafb;
-            padding: 15px;
-            font-size: 0.85em;
+        /* Chat bubbles */
+        .chat-box {
+            margin-top: 12px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .chat-scroller {
+            background: #f1f5f9;
             border: 1px solid var(--border-color);
-            border-radius: 4px;
-            max-height: 200px;
+            border-radius: 6px;
+            padding: 12px;
+            max-height: 180px;
             overflow-y: auto;
-        }
-
-        .tag-value {
-            color: #c0392b;
-            font-weight: bold;
-            font-family: monospace;
-        }
-
-        #qrcode img {
-            max-width: 100%;
-            height: auto;
-            margin: 0 auto;
-        }
-
-        /* Top Header */
-        .mypage-header {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        /* Qrcode fit */
+        #qrcode img {
+            max-width: 160px;
+            height: auto;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .mypage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-bottom: 1px solid var(--border-color);
-            padding-bottom: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
         }
 
         .mypage-header h2 {
-            font-size: 1.3em;
+            font-size: 1.15em;
             color: var(--primary-color);
         }
 
         .mypage-header-right {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            width: 100%;
-            gap: 10px;
+            gap: 8px;
         }
 
         .mypage-header-right span {
-            font-size: 0.8em;
+            font-size: 0.75em;
             color: var(--text-sub);
         }
 
         .mypage-header-right .btn {
             width: auto;
-            padding: 6px 12px;
-            font-size: 0.8em;
-            min-height: 32px;
+            padding: 6px 10px;
+            font-size: 0.75em;
+            min-height: 30px;
         }
 
-        /* Simulators */
         .simulator-section {
             background: #fff9e6;
             border-color: #ffe58f;
@@ -235,76 +326,20 @@
         .simulator-actions {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-        }
-
-        .simulator-actions .btn {
-            width: 100%;
-        }
-
-        /* Media Queries for Desktop layout scaling */
-        @media (min-width: 600px) {
-            body {
-                padding: 30px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-                text-align: left;
-            }
-
-            h1 span {
-                display: inline;
-                margin-left: 10px;
-                font-size: 0.55em;
-            }
-
-            .btn {
-                width: auto;
-            }
-
-            .user-card {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-                gap: 20px;
-            }
-
-            .user-card-actions {
-                width: auto;
-            }
-
-            .mypage-header {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .mypage-header-right {
-                width: auto;
-                justify-content: flex-end;
-            }
-
-            .simulator-actions {
-                flex-direction: row;
-            }
-
-            .simulator-actions .btn {
-                width: auto;
-            }
+            gap: 8px;
         }
     </style>
+</head>
 <body>
     <div class="container">
-        <h1>体育会系学生スカウトSNS <span style="font-size: 0.5em; color: #65676b;">(Yume v2 プロトタイプ)</span></h1>
-        
-        <div id="app">
-            <!-- UI はここにレンダリングされます -->
+        <!-- iOS/Android Native-like App Header Bar -->
+        <div class="app-header">
+            <h1>Athlete Scout SNS</h1>
+            <span style="font-size: 0.75em; font-weight: bold; background: #eceef7; color: var(--primary-color); padding: 3px 8px; border-radius: 12px;">学生用</span>
         </div>
 
-        <div class="section">
-            <h3>請求履歴（管理者用）</h3>
-            <div id="billing-view" class="billing-log"></div>
+        <div id="app">
+            <!-- UI Is deklaratively rendered here -->
         </div>
     </div>
 
@@ -318,16 +353,10 @@
         initStore();
 
         const appEl = document.getElementById('app');
-        const billingEl = document.getElementById('billing-view');
 
         // Observer: Re-render on state change
         function update() {
             render(appEl, store.REAL_state, dispatch);
-            
-            // Update billing log
-            billingEl.innerHTML = store.REAL_state.billing.map(b => 
-                `<div>[${b.type}] ${b.matchId} -> <span class="tag-value">${b.amount}</span></div>`
-            ).join('') || 'No transactions yet.';
         }
 
         // Initial render
