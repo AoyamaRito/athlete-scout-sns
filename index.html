@@ -311,8 +311,11 @@
     <script src="vendor/qrcode.min.js"></script>
     <script src="vendor/jsQR.js"></script>
     <script type="module">
-        import { store, dispatch } from './logic.yume.js';
+        import { store, dispatch, initStore } from './logic.yume.js';
         import { render } from './ui.yume.js';
+
+        // Replay localStorage events
+        initStore();
 
         const appEl = document.getElementById('app');
         const billingEl = document.getElementById('billing-view');

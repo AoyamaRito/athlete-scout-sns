@@ -1,5 +1,5 @@
 // @yume-format: 1
-// yume-core.js - Minimal AI-Native Core for Student Scout SNS
+// yume-core.js - Minimal AI-Native Core for Student Scout SNS with Replay Persistence
 
 export function hash(obj) {
   const stable = JSON.stringify(obj, Object.keys(obj).sort());
@@ -30,11 +30,33 @@ export function evalConstraint({ axes, values, derive }, filter = {}) {
 }
 
 export class EventStore {
-  constructor(initialState = {}) {
-    this.REAL_state = initialState;
+  constructor(initialState = {}, storageKey = 'sns_events') {
+    this.initialState = initialState;
+    this.storageKey = storageKey;
+    this.REAL_state = JSON.parse(JSON.stringify(initialState));
     this.events = [];
   }
+
+  loadAndReplay(reducer) {
+    if (typeof window === 'undefined') return;
+    try {
+      const stored = localStorage.getItem(this.storageKey);
+      if (stored) {
+        this.events = JSON.parse(stored);
+        let tempState = JSON.parse(JSON.stringify(this.initialState));
+        for (const ev of this.events) {
+          tempState = reducer(tempState, ev);
+        }
+        this.REAL_state = tempState;
+      }
+    } catch (e) {
+      console.error('Failed to load/replay events from localStorage:', e);
+    }
+  }
+
   dispatch(event, reducer, validator) {
+    this.loadAndReplay(reducer);
+
     if (validator && !validator(this.REAL_state, event)) {
       console.error('Validation failed for event:', event);
       return false;
@@ -45,6 +67,14 @@ export class EventStore {
     event.hash = hash(event);
     this.events.push(event);
     this.REAL_state = nextState;
+
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(this.storageKey, JSON.stringify(this.events));
+      } catch (e) {
+        console.error('Failed to save event to localStorage:', e);
+      }
+    }
     return true;
   }
 }
