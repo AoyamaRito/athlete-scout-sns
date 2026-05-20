@@ -533,6 +533,7 @@ export function snsValidator(state, event) {
 
   if (type === 'SET_FRIEND') {
     if (!payload.studentId || !payload.friendId) return false;
+    if (payload.studentId === payload.friendId) return false; // Block self-linking
     const s1 = state.users[payload.studentId];
     const s2 = state.users[payload.friendId];
     if (!s1 || !s2 || s1.role !== Roles.STUDENT || s2.role !== Roles.STUDENT) return false;

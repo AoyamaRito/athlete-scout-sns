@@ -7,7 +7,7 @@
 import test from 'node:test';
 import assert from 'node:assert';
 import { store, dispatch } from './logic.yume.js';
-import { Roles, MatchStatus } from './BIBLE.js';
+import { Roles, MatchStatus, checkPairEligibility } from './BIBLE.js';
 
 test('E2E Full Flow: Register, Pair Scout, Funnel Progress, Billing, Exceptions', () => {
   // Reset store to initial fresh state
@@ -132,4 +132,88 @@ test('E2E Full Flow: Register, Pair Scout, Funnel Progress, Billing, Exceptions'
   // Send scout from a student role (role constraint failure)
   const studentTriesToScout = dispatch({ type: 'SEND_SCOUT', payload: { corpId: 'std:1', studentIds: ['std:2'] } });
   assert.strictEqual(studentTriesToScout, false, 'Students should not be allowed to act as scouts');
+});
+
+test('E2E Relentless Student-to-Student: Onboarding, Formations, and Mutual Photo Connections', () => {
+  // Fresh state
+  store.REAL_state = {
+    users: {},
+    matches: {},
+    billing: [],
+    REAL_auth: null
+  };
+
+  // 1. Spawning 4 distinct student athletes with nicknames & sports
+  const r1 = dispatch({
+    type: 'USER_REGISTER',
+    payload: { id: 'std:A', role: Roles.STUDENT, nickname: 'サカ太郎', sport: 'サッカー部 (FW)' }
+  });
+  const r2 = dispatch({
+    type: 'USER_REGISTER',
+    payload: { id: 'std:B', role: Roles.STUDENT, nickname: 'サカ次郎', sport: 'サッカー部 (MF)' }
+  });
+  const r3 = dispatch({
+    type: 'USER_REGISTER',
+    payload: { id: 'std:C', role: Roles.STUDENT, nickname: 'ヤキ球太', sport: '野球部 (投手)' }
+  });
+  const r4 = dispatch({
+    type: 'USER_REGISTER',
+    payload: { id: 'std:D', role: Roles.STUDENT, nickname: 'ヤキ球次郎', sport: '野球部 (捕手)' }
+  });
+
+  assert.strictEqual(r1, true);
+  assert.strictEqual(r2, true);
+  assert.strictEqual(r3, true);
+  assert.strictEqual(r4, true);
+
+  const state = store.REAL_state;
+  assert.strictEqual(Object.keys(state.users).length, 4, 'Should register 4 student-athletes');
+
+  // 2. Testing One-Sided Friend Link (サカ太郎 -> サカ次郎)
+  const link1 = dispatch({
+    type: 'SET_FRIEND',
+    payload: { studentId: 'std:A', friendId: 'std:B' }
+  });
+  assert.strictEqual(link1, true, 'One-sided link from A to B should succeed');
+  
+  // Verify that they are NOT mutually eligible for pair scouting yet
+  const userA = state.users['std:A'];
+  const userB = state.users['std:B'];
+  assert.strictEqual(checkPairEligibility(userA, userB), false, 'One-sided friends must not be eligible for pair scouting');
+
+  // 3. Testing Mutual Friend Link (サカ次郎 -> サカ太郎)
+  const link2 = dispatch({
+    type: 'SET_FRIEND',
+    payload: { studentId: 'std:B', friendId: 'std:A' }
+  });
+  assert.strictEqual(link2, true, 'Mutual link from B to A should succeed');
+
+  // Now they MUST be mutually eligible for pair scouting!
+  assert.strictEqual(checkPairEligibility(store.REAL_state.users['std:A'], store.REAL_state.users['std:B']), true, 'Mutual best friends must be fully eligible for pairing');
+
+  // 4. Testing Profile Updates (Onboarding/Quick-Fill)
+  const upRes = dispatch({
+    type: 'UPDATE_PROFILE',
+    payload: {
+      userId: 'std:A',
+      profile: {
+        nickname: 'サカ太郎極',
+        position: 'エースストライカー',
+        selfIntroduction: '背番号10番、サッカー部FWです。相棒のサカ次郎とは目線だけで通じ合えます。'
+      }
+    }
+  });
+  assert.strictEqual(upRes, true, 'Profile update should succeed');
+
+  const updatedA = store.REAL_state.users['std:A'];
+  assert.strictEqual(updatedA.profile.nickname, 'サカ太郎極', 'Nickname update must apply');
+  assert.strictEqual(updatedA.profile.selfIntroduction, '背番号10番、サッカー部FWです。相棒のサカ次郎とは目線だけで通じ合えます。', 'Self-introduction update must apply');
+  assert.strictEqual(updatedA.profile.selfPR, '背番号10番、サッカー部FWです。相棒のサカ次郎とは目線だけで通じ合えます。', 'SelfPR fallback must match');
+
+  // 5. Exception Guard: Attempting to link oneself as best friend (must be blocked!)
+  const badSelfLink = dispatch({
+    type: 'SET_FRIEND',
+    payload: { studentId: 'std:A', friendId: 'std:A' }
+  });
+  assert.strictEqual(badSelfLink, false, 'Self-linking as best friend must be strictly blocked by validator');
 });
