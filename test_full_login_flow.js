@@ -25,7 +25,7 @@ const __dirname = path.dirname(__filename);
 
   // 1. Go to page
   console.log('Navigating to live Student Portal...');
-  await page.goto('https://20ed11e9.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
+  await page.goto('https://2f74f44c.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
 
   // 2. Click Register
   console.log('Clicking "新しく学生アカウントを作る"...');
@@ -50,7 +50,7 @@ const __dirname = path.dirname(__filename);
 
   // 5. Reload to go back to clean logout state
   console.log('Reloading page to return to Login screen...');
-  await page.goto('https://20ed11e9.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
+  await page.goto('https://2f74f44c.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(1000);
 
   // 6. Upload the downloaded QR PNG file to log in!
