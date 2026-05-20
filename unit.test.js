@@ -9,6 +9,7 @@ import assert from 'node:assert';
 import { hash, evalConstraint } from './yume-core.js';
 import { checkPairEligibility } from './BIBLE.js';
 import { createNewUserIdentity, authenticateWithKey } from './auth.yume.js';
+import { snsReducer, snsValidator } from './logic.yume.js';
 
 test('yume-core: hash stability and uniqueness', () => {
   const objA = { id: 'std:1', name: 'Alice', friends: ['std:2'] };
@@ -59,4 +60,56 @@ test('auth: Ed25519 identity generation & recovery', async () => {
 
   const invalidRecover = await authenticateWithKey('invalid-recovery-key-format');
   assert.strictEqual(invalidRecover.success, false, 'Invalid recovery key must fail gracefully');
+});
+
+test('logic: profile schema validation and fallbacks (nickname & selfIntroduction)', () => {
+  const state = {
+    users: {},
+    matches: {},
+    billing: [],
+    messages: []
+  };
+
+  // Test USER_REGISTER with nickname and selfIntroduction
+  const regEvent = {
+    type: 'USER_REGISTER',
+    payload: {
+      id: 'std:test-user',
+      role: 'ロール:学生',
+      nickname: 'ひろ (Hiro)',
+      selfIntroduction: '陸上短距離で日本一を目指しています。'
+    }
+  };
+
+  // Validate
+  const isValid = snsValidator(state, regEvent);
+  assert.strictEqual(isValid, true, 'Registration with nickname should be valid');
+
+  // Reduce
+  const nextState = snsReducer(state, regEvent);
+  const user = nextState.users['std:test-user'];
+  
+  assert.ok(user, 'User should be registered');
+  assert.strictEqual(user.profile.nickname, 'ひろ (Hiro)', 'Nickname must match');
+  assert.strictEqual(user.profile.name, 'ひろ (Hiro)', 'Name fallback must match nickname');
+  assert.strictEqual(user.profile.selfIntroduction, '陸上短距離で日本一を目指しています。', 'Self-introduction must match');
+  assert.strictEqual(user.profile.selfPR, '陸上短距離で日本一を目指しています。', 'SelfPR fallback must match selfIntroduction');
+
+  // 2. Test UPDATE_PROFILE with nickname and selfIntroduction
+  const updateEvent = {
+    type: 'UPDATE_PROFILE',
+    payload: {
+      userId: 'std:test-user',
+      profile: {
+        nickname: 'ひろポン',
+        selfIntroduction: '走るのが大好きなスプリンターです。'
+      }
+    }
+  };
+
+  const finalState = snsReducer(nextState, updateEvent);
+  const updatedUser = finalState.users['std:test-user'];
+
+  assert.strictEqual(updatedUser.profile.nickname, 'ひろポン', 'Updated nickname must match');
+  assert.strictEqual(updatedUser.profile.selfIntroduction, '走るのが大好きなスプリンターです。', 'Updated selfIntroduction must match');
 });

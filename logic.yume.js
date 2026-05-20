@@ -184,6 +184,39 @@ export const __block = {
       "tags": [],
       "applyId": "apply-2026-05-20-747e6d1a",
       "v": 6
+    },
+    {
+      "content": "\nimport { EventStore, evalConstraint } from './yume-core.js';\nimport { Roles, MatchStatus, StatusTransitions, checkPairEligibility, Fees } from './BIBLE.js';\n\nconst initialState = {\n  users: {\n    'std:alice': {\n      id: 'std:alice',\n      role: Roles.STUDENT,\n      profile: {\n        nickname: '美咲 (みさ)',\n        sport: 'サッカー部 (FW)',\n        position: 'フォワード / 主将',\n        selfIntroduction: '全国高校選手権ベスト8、都リーグ得点王。チームを牽引するリーダーシップと決定力が強みです！親友の拓海とは中高大10年間同じピッチで戦い、阿吽の呼吸でパスを通せます。',\n        friends: ['std:bob']\n      }\n    },\n    'std:bob': {\n      id: 'std:bob',\n      role: Roles.STUDENT,\n      profile: {\n        nickname: '拓海 (たく)',\n        sport: 'サッカー部 (MF)',\n        position: 'ミッドフィルダー / 司令塔',\n        selfIntroduction: '関東大学2部リーグ アシスト王。広い視野から繰り出す正確なパスと、ゲームを支配する戦術眼が武器です。美咲とは長年お互いの視線だけでゴールを演出できる関係です。',\n        friends: ['std:alice']\n      }\n    },\n    'std:charlie': {\n      id: 'std:charlie',\n      role: Roles.STUDENT,\n      profile: {\n        nickname: '陸 (りく)',\n        sport: '野球部 (投手)',\n        position: 'エースピッチャー',\n        selfIntroduction: '東京六大学リーグ 最優秀防御率。最速148kmのストレートとキレのあるスライダーが武器です。チームの勝利のために、マウンド上では常に冷静さを失いません。',\n        friends: []\n      }\n    },\n    'std:dave': {\n      id: 'std:dave',\n      role: Roles.STUDENT,\n      profile: {\n        nickname: '翔太 (しょう)',\n        sport: '野球部 (捕手)',\n        position: '正捕手 / 副主将',\n        selfIntroduction: '春季リーグ ベストナイン。投手の長所を引き出すインサイドワークと二塁送球1.9秒の強肩が売りです。陸とはバッテリーとして絶対の信頼関係があります。',\n        friends: ['std:charlie']\n      }\n    },\n    'corp:demo': {\n      id: 'corp:demo',\n      role: Roles.CORPORATION,\n      profile: {\n        name: '株式会社スポーツリーディング',\n        sport: 'スポーツ採用・マーケティング'\n      }\n    }\n  },\n  matches: {\n    'match:corp:demo:std:alice-std:bob': {\n      id: 'match:corp:demo:std:alice-std:bob',\n      corpId: 'corp:demo',\n      studentIds: ['std:alice', 'std:bob'],\n      status: MatchStatus.SCOUTED,\n      interviewType: 'タイプ:ペア',\n      createdAt: Date.now()\n    }\n  },\n  billing: [],\n  messages: [],\n  REAL_auth: null\n};\n\n/**\n * REDUCER: Purely derives next state from current state + event\n */\nexport function snsReducer(state, event) {\n  const { type, payload } = event;\n  const users = { ...state.users };\n  const matches = { ...state.matches };\n  const billing = [...state.billing];\n  const messages = state.messages ? [...state.messages] : [];\n\n  switch (type) {\n    case 'USER_REGISTER': {\n      const selfIntro = payload.selfIntroduction || payload.selfPR || payload.achievements || '';\n      users[payload.id] = {\n        id: payload.id,\n        role: payload.role,\n        profile: { \n          nickname: payload.nickname || payload.name || '新規ユーザー', \n          name: payload.name || payload.nickname || '新規ユーザー',\n          sport: payload.sport || '',\n          position: payload.position || '',\n          selfIntroduction: selfIntro,\n          selfPR: selfIntro,\n          achievements: selfIntro,\n          friends: [] \n        }\n      };\n      break;\n    }\n\n    case 'UPDATE_PROFILE': {\n      const user = users[payload.userId];\n      if (user) {\n        const p = { ...user.profile, ...payload.profile };\n        const selfIntro = p.selfIntroduction || p.selfPR || p.achievements || '';\n        p.selfIntroduction = selfIntro;\n        p.selfPR = selfIntro;\n        p.achievements = selfIntro;\n        p.name = p.nickname || p.name || '新規ユーザー';\n        p.nickname = p.nickname || p.name || '新規ユーザー';\n        users[payload.userId] = {\n          ...user,\n          profile: p\n        };\n      }\n      break;\n    }\n\n    case 'SET_FRIEND': {\n      const student = users[payload.studentId];\n      if (student) {\n        users[payload.studentId] = {\n          ...student,\n          profile: {\n            ...student.profile,\n            friends: [...new Set([...student.profile.friends, payload.friendId])]\n          }\n        };\n      }\n      break;\n    }\n\n    case 'SEND_SCOUT': {\n      const matchId = `match:${payload.corpId}:${[...payload.studentIds].sort().join('-')}`;\n      matches[matchId] = {\n        id: matchId,\n        corpId: payload.corpId,\n        studentIds: payload.studentIds,\n        status: MatchStatus.SCOUTED,\n        interviewType: payload.studentIds.length > 1 ? 'タイプ:ペア' : 'タイプ:単体',\n        createdAt: Date.now()\n      };\n      break;\n    }\n\n    case 'REJECT_SCOUT': {\n      const match = matches[payload.matchId];\n      if (match) {\n        match.status = MatchStatus.REJECTED;\n      }\n      break;\n    }\n\n    case 'CANCEL_SCOUT': {\n      // Cleanly delete the pending match since no fees are incurred yet\n      if (matches[payload.matchId]) {\n        delete matches[payload.matchId];\n      }\n      break;\n    }\n\n    case 'SET_INTERVIEW': {\n      const match = matches[payload.matchId];\n      if (match) {\n        match.status = MatchStatus.INTERVIEW_SET;\n        const fee = match.interviewType === 'タイプ:ペア' ? Fees.PAIR_INTERVIEW : Fees.SINGLE_INTERVIEW;\n        billing.push({\n          id: `bill:${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,\n          matchId: match.id,\n          amount: fee,\n          type: '手数料:面談',\n          status: 'UNPAID'\n        });\n      }\n      break;\n    }\n\n    case 'MARK_HIRED': {\n      const match = matches[payload.matchId];\n      if (match) {\n        match.status = MatchStatus.HIRED;\n        const fee = match.interviewType === 'タイプ:ペア' ? Fees.PAIR_HIRE : Fees.SINGLE_HIRE;\n        billing.push({\n          id: `bill:${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,\n          matchId: match.id,\n          amount: fee,\n          type: '手数料:採用',\n          status: 'UNPAID'\n        });\n      }\n      break;\n    }\n\n    case 'PAY_BILL': {\n      const idx = billing.findIndex(b => b.id === payload.billId);\n      if (idx !== -1) {\n        billing[idx] = { ...billing[idx], status: 'PAID' };\n      }\n      break;\n    }\n\n    case 'SEND_MESSAGE': {\n      messages.push({\n        id: `msg:${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,\n        matchId: payload.matchId,\n        senderId: payload.senderId,\n        text: payload.text,\n        timestamp: Date.now()\n      });\n      break;\n    }\n\n    case 'SET_AUTH': {\n      return { ...state, REAL_auth: payload };\n    }\n  }\n\n  return { ...state, users, matches, billing, messages };\n}\n\n/**\n * VALIDATOR: Checks if an event is allowed given the current state\n */\nexport function snsValidator(state, event) {\n  const { type, payload } = event;\n\n  if (!payload) return false;\n\n  if (type === 'USER_REGISTER') {\n    if (!payload.id || !payload.role) return false;\n    if (!payload.nickname && !payload.name) return false;\n  }\n\n  if (type === 'SEND_MESSAGE') {\n    const match = state.matches[payload.matchId];\n    if (!match) return false;\n    // Chat allowed during interview and after hire\n    if (match.status !== MatchStatus.INTERVIEW_SET && match.status !== MatchStatus.HIRED) return false;\n    \n    // Constraint: Must have paid the interview fee (手数料:面談) before chatting\n    const interviewBill = state.billing.find(b => b.matchId === payload.matchId && b.type === '手数料:面談');\n    if (!interviewBill || interviewBill.status !== 'PAID') return false;\n\n    // Must be a valid sender associated with the match\n    const isValidSender = match.corpId === payload.senderId || match.studentIds.includes(payload.senderId);\n    if (!isValidSender) return false;\n    if (typeof payload.text !== 'string' || payload.text.trim() === '') return false;\n  }\n\n  if (type === 'PAY_BILL') {\n    if (!payload.billId) return false;\n    const bill = state.billing.find(b => b.id === payload.billId);\n    if (!bill) return false;\n  }\n\n  if (type === 'SET_FRIEND') {\n    if (!payload.studentId || !payload.friendId) return false;\n    const s1 = state.users[payload.studentId];\n    const s2 = state.users[payload.friendId];\n    if (!s1 || !s2 || s1.role !== Roles.STUDENT || s2.role !== Roles.STUDENT) return false;\n  }\n\n  if (type === 'SET_AUTH') {\n    if (!payload.publicId || !payload.identity) return false;\n  }\n\n  if (type === 'SEND_SCOUT') {\n    // If pair scout, check eligibility\n    if (payload.studentIds.length === 2) {\n      const s1 = state.users[payload.studentIds[0]];\n      const s2 = state.users[payload.studentIds[1]];\n      if (!s1 || !s2 || !checkPairEligibility(s1, s2)) return false;\n    } else if (payload.studentIds.length === 1) {\n      const s = state.users[payload.studentIds[0]];\n      if (!s || s.role !== Roles.STUDENT) return false;\n    } else {\n      return false;\n    }\n    const c = state.users[payload.corpId];\n    if (!c || c.role !== Roles.CORPORATION) return false;\n  }\n\n  if (type === 'REJECT_SCOUT') {\n    const match = state.matches[payload.matchId];\n    if (!match) return false;\n    const worlds = evalConstraint(StatusTransitions, { from: match.status, to: MatchStatus.REJECTED });\n    if (worlds._contradiction || !worlds.worlds[0]._isValid) return false;\n  }\n\n  if (type === 'CANCEL_SCOUT') {\n    const match = state.matches[payload.matchId];\n    if (!match || match.status !== MatchStatus.SCOUTED) return false;\n  }\n\n  if (type === 'SET_INTERVIEW' || type === 'MARK_HIRED') {\n    const match = state.matches[payload.matchId];\n    if (!match) return false;\n    \n    // Use BIBLE constraints for status transition\n    const targetStatus = type === 'SET_INTERVIEW' ? MatchStatus.INTERVIEW_SET : MatchStatus.HIRED;\n    const worlds = evalConstraint(StatusTransitions, { from: match.status, to: targetStatus });\n    if (worlds._contradiction || !worlds.worlds[0]._isValid) return false;\n  }\n\n  return true;\n}\n\nexport const store = new EventStore(initialState);\n\nexport function initStore() {\n  store.loadAndReplay(snsReducer);\n}\n\nexport function dispatch(event) {\n  return store.dispatch(event, snsReducer, snsValidator);\n}\n",
+      "ts": 1779254991391,
+      "refs": [
+        {
+          "kind": "import",
+          "target": "./yume-core.js"
+        },
+        {
+          "kind": "import",
+          "target": "./BIBLE.js"
+        },
+        {
+          "kind": "calls",
+          "target": "Set"
+        },
+        {
+          "kind": "calls",
+          "target": "checkPairEligibility"
+        },
+        {
+          "kind": "calls",
+          "target": "evalConstraint"
+        },
+        {
+          "kind": "calls",
+          "target": "EventStore"
+        }
+      ],
+      "tags": [],
+      "applyId": "apply-2026-05-20-93b3e4b4",
+      "v": 7
     }
   ],
   "notes": {
@@ -225,6 +258,14 @@ export const __block = {
         "author": "human",
         "ts": 1779253015374,
         "text": "Export initStore for localStorage replay initialization"
+      }
+    ],
+    "apply:apply-2026-05-20-93b3e4b4": [
+      {
+        "id": "n-a1f3701a-654c-47c5-99dc-bb3c5ede9cd0",
+        "author": "human",
+        "ts": 1779254991396,
+        "text": "Implement symmetric fallback mapping in USER_REGISTER and UPDATE_PROFILE reducers"
       }
     ]
   }
@@ -317,6 +358,7 @@ export function snsReducer(state, event) {
 
   switch (type) {
     case 'USER_REGISTER': {
+      const selfIntro = payload.selfIntroduction || payload.selfPR || payload.achievements || '';
       users[payload.id] = {
         id: payload.id,
         role: payload.role,
@@ -325,7 +367,9 @@ export function snsReducer(state, event) {
           name: payload.name || payload.nickname || '新規ユーザー',
           sport: payload.sport || '',
           position: payload.position || '',
-          selfIntroduction: payload.selfIntroduction || payload.selfPR || payload.achievements || '',
+          selfIntroduction: selfIntro,
+          selfPR: selfIntro,
+          achievements: selfIntro,
           friends: [] 
         }
       };
@@ -335,12 +379,16 @@ export function snsReducer(state, event) {
     case 'UPDATE_PROFILE': {
       const user = users[payload.userId];
       if (user) {
+        const p = { ...user.profile, ...payload.profile };
+        const selfIntro = p.selfIntroduction || p.selfPR || p.achievements || '';
+        p.selfIntroduction = selfIntro;
+        p.selfPR = selfIntro;
+        p.achievements = selfIntro;
+        p.name = p.nickname || p.name || '新規ユーザー';
+        p.nickname = p.nickname || p.name || '新規ユーザー';
         users[payload.userId] = {
           ...user,
-          profile: {
-            ...user.profile,
-            ...payload.profile
-          }
+          profile: p
         };
       }
       break;
