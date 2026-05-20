@@ -19,7 +19,7 @@ import { chromium } from 'playwright';
 
   // 1. Go to page
   console.log('Navigating to live Student Portal...');
-  await page.goto('https://feat-yume-clearify.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
+  await page.goto('https://d202bd9c.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
 
   // 2. Click Register
   console.log('Clicking "新しく学生アカウントを作る"...');
@@ -33,7 +33,7 @@ import { chromium } from 'playwright';
 
   // 4. Reload page to go back to clean login state
   console.log('Reloading page to return to Login screen...');
-  await page.goto('https://feat-yume-clearify.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
+  await page.goto('https://d202bd9c.athlete-scout-sns.pages.dev/', { waitUntil: 'networkidle' });
   await page.waitForTimeout(1000);
 
   // 5. Fill the paste-key-input textarea with the extracted key
