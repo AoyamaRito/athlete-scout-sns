@@ -136,12 +136,16 @@ function renderAuth(container, state, dispatch) {
     qrEl.innerHTML = `
     <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; border: 1px solid #1877f2; margin-top: 20px;">
       <p style="color: #050505; font-weight: bold;">新しい鍵が発行されました！</p>
-      <p style="font-size: 0.9em; color: #65676b;">この画像を保存して、大切に保管してください。<br>次回からこの画像でログインできます。</p>
+      <p style="font-size: 0.9em; color: #65676b;">この鍵（画像）をダウンロードして大切に保管してください。</p>
       <div id="qrcode" style="margin: 20px 0;"></div>
+      <div style="margin-bottom: 20px;">
+        <button class="btn" onclick="window.sns_download_qr()">鍵をWebP画像として保存</button>
+      </div>
       <p style="font-size: 0.7em; word-break: break-all; color: #8a8d91; background: #fff; padding: 10px; border-radius: 4px;">鍵文字列: ${recoveryKey}</p>
       <div style="margin-top: 20px;">
-        <button class="btn" onclick="location.reload()">ログイン画面に戻る</button>
+        <button class="btn btn-secondary" onclick="location.reload()">ログイン画面に戻る</button>
       </div>
+      <canvas id="qr-canvas" style="display: none;"></canvas>
     </div>`;
     
     // Generate QR using vendor library
@@ -150,7 +154,33 @@ function renderAuth(container, state, dispatch) {
     const qr = qrcode(typeNumber, errorCorrectionLevel);
     qr.addData(recoveryKey);
     qr.make();
-    document.getElementById('qrcode').innerHTML = qr.createImgTag(5);
+    
+    const qrContainer = document.getElementById('qrcode');
+    qrContainer.innerHTML = qr.createImgTag(5);
+    
+    // Download logic
+    window.sns_download_qr = () => {
+      const img = qrContainer.querySelector('img');
+      const canvas = document.getElementById('qr-canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Ensure image is loaded
+      const runDownload = () => {
+        canvas.width = img.width + 40; // Add padding
+        canvas.height = img.height + 40;
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 20, 20);
+        
+        const link = document.createElement('a');
+        link.download = `athlete-sns-key-${publicId.slice(0,8)}.webp`;
+        link.href = canvas.toDataURL('image/webp');
+        link.click();
+      };
+      
+      if (img.complete) runDownload();
+      else img.onload = runDownload;
+    };
   };
 
   window.sns_handle_qr_file = async (input) => {
